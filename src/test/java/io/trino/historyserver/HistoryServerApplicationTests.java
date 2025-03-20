@@ -11,7 +11,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 @Testcontainers
 @SpringBootTest
-class AccessingDataMysqlApplicationTests {
+class HistoryServerApplicationTests {
 
 	@Container
 	@ServiceConnection
