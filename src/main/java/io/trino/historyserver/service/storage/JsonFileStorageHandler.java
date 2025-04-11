@@ -9,9 +9,9 @@ import java.util.function.Function;
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.QueryStorageException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class JsonFileStorageHandler
         implements QueryStorageHandler
 {

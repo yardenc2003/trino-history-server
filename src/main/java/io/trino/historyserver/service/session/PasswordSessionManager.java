@@ -1,4 +1,4 @@
-package io.trino.historyserver.service.auth;
+package io.trino.historyserver.service.session;
 
 import java.util.List;
 import java.util.Map;
@@ -10,13 +10,13 @@ import io.trino.historyserver.exception.TrinoAuthFailed;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-@Component
+@Service
 public class PasswordSessionManager
         implements TrinoSessionManager
 {
