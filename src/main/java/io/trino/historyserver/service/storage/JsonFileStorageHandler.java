@@ -36,7 +36,7 @@ public class JsonFileStorageHandler
     public void storeFullQuery(QueryReference queryRef, String queryJson)
             throws QueryStorageException
     {
-        storeQuery(queryRef, queryJson, this::getFullQueryDirQueryPath);
+        storeQuery(queryRef, queryJson, this::getFullQueryPath);
     }
 
     private void storeQuery(
@@ -74,7 +74,7 @@ public class JsonFileStorageHandler
         return Path.of(baseDir, previewQueryDir, queryRef.queryId() + ".json");
     }
 
-    public Path getFullQueryDirQueryPath(QueryReference queryRef)
+    public Path getFullQueryPath(QueryReference queryRef)
     {
         return Path.of(baseDir, fullQueryDir, queryRef.queryId() + ".json");
     }
