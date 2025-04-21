@@ -28,7 +28,7 @@ public class QueryImportController
     }
 
     @PostMapping("/query-complete")
-    public void completeQueryNotify(@RequestBody String queryCompletedJson, HttpServletRequest request)
+    public String completeQueryNotify(@RequestBody String queryCompletedJson, HttpServletRequest request)
     {
         QueryReference queryRef = queryReferenceFactory.create(queryCompletedJson, request);
 
@@ -37,5 +37,10 @@ public class QueryImportController
                 queryRef.coordinatorUrl());
 
         queryImportService.importQuery(queryRef);
+
+        return String.format(
+                "Query %s was successfully imported.",
+                queryRef.queryId()
+        );
     }
 }
