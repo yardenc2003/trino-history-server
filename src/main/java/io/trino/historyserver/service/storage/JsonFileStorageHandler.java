@@ -16,6 +16,8 @@ public class JsonFileStorageHandler
         implements QueryStorageHandler
 {
 
+    private static final String FILE_EXTENSION = ".json";
+
     @Value("${storage.queries-base-dir:./data}")
     private String baseDir;
 
@@ -71,11 +73,11 @@ public class JsonFileStorageHandler
 
     public Path getPreviewQueryPath(QueryReference queryRef)
     {
-        return Path.of(baseDir, previewQueryDir, queryRef.queryId() + ".json");
+        return Path.of(baseDir, previewQueryDir, queryRef.queryId() + FILE_EXTENSION);
     }
 
     public Path getFullQueryPath(QueryReference queryRef)
     {
-        return Path.of(baseDir, fullQueryDir, queryRef.queryId() + ".json");
+        return Path.of(baseDir, fullQueryDir, queryRef.queryId() + FILE_EXTENSION);
     }
 }
