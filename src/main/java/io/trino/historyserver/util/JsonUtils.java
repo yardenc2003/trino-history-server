@@ -1,6 +1,5 @@
 package io.trino.historyserver.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JsonUtils
 {
-
     private final ObjectMapper objectMapper;
 
     public JsonUtils(ObjectMapper objectMapper)
