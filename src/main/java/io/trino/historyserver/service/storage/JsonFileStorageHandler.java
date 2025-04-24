@@ -66,6 +66,31 @@ public class JsonFileStorageHandler
         return queryJson;
     }
 
+    private String readQuery(
+            QueryReference queryRef,
+            Function<QueryReference, Path> pathResolver
+    )
+            throws QueryStorageException
+    {
+        String queryJson;
+        Path path = pathResolver.apply(queryRef);
+
+        try {
+            queryJson = this.read(path);
+        }
+        catch (IOException e) {
+            throw new QueryStorageException(
+                    String.format(
+                            "Failed to read query %s JSON to file. path=%s reason=%s",
+                            queryRef.queryId(), path, e.getMessage()
+                    ),
+                    queryRef.queryId()
+            );
+        }
+        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), path);
+        return queryJson;
+    }
+
     private void store(Path fullPath, String content)
             throws IOException
     {
@@ -82,5 +107,19 @@ public class JsonFileStorageHandler
     public Path getQueryPath(String queryId)
     {
         return Path.of(queryDir, queryId + FILE_EXTENSION);
+    }
+
+    @Override
+    public void readPreviewQuery(QueryReference queryRef)
+            throws QueryStorageException
+    {
+        readQuery(queryRef, this::getPreviewQueryPath);
+    }
+
+    @Override
+    public void readFullQuery(QueryReference queryRef)
+            throws QueryStorageException
+    {
+        readQuery(queryRef, this::getPreviewQueryPath);
     }
 }

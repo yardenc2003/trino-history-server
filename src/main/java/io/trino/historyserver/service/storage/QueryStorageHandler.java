@@ -9,6 +9,4 @@ public interface QueryStorageHandler {
             throws QueryStorageException;
     String readQuery(String queryId)
             throws QueryStorageException;
-    String readQuery(QueryReference queryRef)
-            throws QueryStorageException;
 }
