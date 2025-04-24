@@ -3,14 +3,12 @@ package io.trino.historyserver.service.controller;
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.service.fetch.QueryFetcher;
 import io.trino.historyserver.service.storage.QueryStorageHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class QueryImportService {
-
-    private static final Logger logger = LoggerFactory.getLogger(QueryImportService.class);
 
     private final QueryFetcher queryFetcher;
     private final QueryStorageHandler queryStorageHandler;
@@ -38,6 +36,6 @@ public class QueryImportService {
             queryStorageHandler.storeFullQuery(queryRef, queryJson);
         }
 
-        logger.info("event=import_{}_query_succeeded queryId={}", type, queryRef.queryId());
+        log.info("event=import_{}_query_succeeded queryId={}", type, queryRef.queryId());
     }
 }
