@@ -10,4 +10,8 @@ public interface QueryStorageHandler {
             throws QueryStorageException;
     void storeFullQuery(QueryReference queryRef, String queryJson)
             throws QueryStorageException;
+    void readPreviewQuery(QueryReference queryRef)
+            throws QueryStorageException;
+    void readFullQuery(QueryReference queryRef)
+            throws QueryStorageException;
 }

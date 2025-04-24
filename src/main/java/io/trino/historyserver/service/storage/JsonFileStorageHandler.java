@@ -42,6 +42,20 @@ public class JsonFileStorageHandler
         storeQuery(queryRef, queryJson, this::getFullQueryPath);
     }
 
+    @Override
+    public void readPreviewQuery(QueryReference queryRef)
+            throws QueryStorageException
+    {
+        readQuery(queryRef, this::getPreviewQueryPath);
+    }
+
+    @Override
+    public void readFullQuery(QueryReference queryRef)
+            throws QueryStorageException
+    {
+        readQuery(queryRef, this::getPreviewQueryPath);
+    }
+
     private void storeQuery(
             QueryReference queryRef,
             String queryJson,
@@ -66,11 +80,42 @@ public class JsonFileStorageHandler
         log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), path);
     }
 
+    private String readQuery(
+            QueryReference queryRef,
+            Function<QueryReference, Path> pathResolver
+    )
+            throws QueryStorageException
+    {
+        String queryJson;
+        Path path = pathResolver.apply(queryRef);
+
+        try {
+            queryJson = this.read(path);
+        }
+        catch (IOException e) {
+            throw new QueryStorageException(
+                    String.format(
+                            "Failed to read query %s JSON to file. path=%s reason=%s",
+                            queryRef.queryId(), path, e.getMessage()
+                    ),
+                    queryRef.queryId()
+            );
+        }
+        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), path);
+        return queryJson;
+    }
+
     private void store(Path fullPath, String content)
             throws IOException
     {
         Files.createDirectories(fullPath.getParent());
         Files.writeString(fullPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    private String read(Path fullPath)
+            throws IOException
+    {
+        return Files.readString(fullPath);
     }
 
     public Path getPreviewQueryPath(QueryReference queryRef)
