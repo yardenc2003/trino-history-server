@@ -10,6 +10,8 @@ import io.trino.historyserver.exception.QueryFetchException;
 import io.trino.historyserver.service.session.PasswordSessionManager;
 import io.trino.historyserver.service.session.TrinoSessionManager;
 import io.trino.historyserver.util.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,8 @@ import reactor.core.publisher.Mono;
 @Service
 public class QueryFetcher
 {
+    private static final Logger logger = LoggerFactory.getLogger(QueryFetcher.class);
+
     private final TrinoSessionManager sessionManager;
     private final WebClient webClient;
     private final JsonUtils jsonUtils;
@@ -58,7 +62,7 @@ public class QueryFetcher
                 queryRef.coordinatorUrl()
         );
 
-        return runWithSessionRetry(queryRef,
+        String queryJson = runWithSessionRetry(queryRef,
                 cookie ->
                         webClient.get()
                                 .uri(url)
@@ -73,6 +77,9 @@ public class QueryFetcher
                                 )
                                 .bodyToMono(String.class)
         );
+
+        logger.info("event=query_fetch_succeeded type=success queryId={} coordinator={}", queryRef.queryId(), queryRef.coordinatorUrl());
+        return queryJson;
     }
 
     private List<Map<String, Object>> fetchAllPreviewQueries(QueryReference queryRef)
@@ -84,7 +91,7 @@ public class QueryFetcher
                 queryRef.coordinatorUrl()
         );
 
-        return runWithSessionRetry(queryRef, cookie ->
+        List<Map<String, Object>> queries = runWithSessionRetry(queryRef, cookie ->
                 webClient.get()
                         .uri(url)
                         .header(HttpHeaders.COOKIE, cookie)
@@ -98,6 +105,9 @@ public class QueryFetcher
                         )
                         .bodyToMono(new ParameterizedTypeReference<>() {})
         );
+
+        logger.info("event=queries_fetch_succeeded type=success queryId={} coordinator={}", queryRef.queryId(), queryRef.coordinatorUrl());
+        return queries;
     }
 
     private <T> T runWithSessionRetry(QueryReference queryRef, Function<String, Mono<T>> requestLogic)

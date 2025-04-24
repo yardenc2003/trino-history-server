@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 
 import io.trino.historyserver.exception.TrinoAuthFailed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,6 +22,8 @@ import reactor.core.publisher.Mono;
 public class PasswordSessionManager
         implements TrinoSessionManager
 {
+    private static final Logger logger = LoggerFactory.getLogger(PasswordSessionManager.class);
+
     @Value("${trino-api.auth.username:}")
     private String username;
 
@@ -47,12 +51,15 @@ public class PasswordSessionManager
     {
         String url = coordinatorUrl + "/ui/login";
 
-        return webClient.post()
+        String cookie = webClient.post()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(createLoginForm())
                 .exchangeToMono(response -> handleLoginResponse(response, coordinatorUrl))
                 .block();
+
+        logger.info("event=trino_cookie_fetch_succeeded type=success coordinator={}", coordinatorUrl);
+        return cookie;
     }
 
     private BodyInserters.FormInserter<String> createLoginForm()
