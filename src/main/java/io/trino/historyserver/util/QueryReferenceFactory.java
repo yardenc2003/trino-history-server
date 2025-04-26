@@ -23,6 +23,10 @@ public class QueryReferenceFactory {
         return new QueryReference(queryId, coordinatorUrl);
     }
 
+    public QueryReference create(String queryId) {
+        return new QueryReference(queryId);
+    }
+
     private String extractQueryId(String json) {
         try {
             JsonNode root = objectMapper.readTree(json);

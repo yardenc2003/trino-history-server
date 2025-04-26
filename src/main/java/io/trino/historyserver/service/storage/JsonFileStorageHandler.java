@@ -43,17 +43,10 @@ public class JsonFileStorageHandler
     }
 
     @Override
-    public void readPreviewQuery(QueryReference queryRef)
+    public String readFullQuery(QueryReference queryRef)
             throws QueryStorageException
     {
-        readQuery(queryRef, this::getPreviewQueryPath);
-    }
-
-    @Override
-    public void readFullQuery(QueryReference queryRef)
-            throws QueryStorageException
-    {
-        readQuery(queryRef, this::getPreviewQueryPath);
+        return readQuery(queryRef, this::getFullQueryPath);
     }
 
     private void storeQuery(
