@@ -34,8 +34,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(QueryStorageException.class)
     public ResponseEntity<String> handleStorageError(QueryStorageException e) {
-        log.error("event=query_store_failed type=server_error queryId={} message=\"{}\"", e.getQueryId(), e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to store query: " + e.getMessage());
+        log.error("event=query_storage_failed type=server_error queryId={} message=\"{}\"", e.getQueryId(), e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error handling query file: " + e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

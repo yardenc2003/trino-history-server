@@ -5,6 +5,6 @@ public class QueryStorageException
 {
     public QueryStorageException(String message, String queryId)
     {
-        super(queryId, message);
+        super(message, queryId);
     }
 }
