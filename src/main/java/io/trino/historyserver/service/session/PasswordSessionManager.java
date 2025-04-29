@@ -71,9 +71,7 @@ public class PasswordSessionManager
         if (response.statusCode().is3xxRedirection()) {
             return Mono.just(getSessionCookie(response, coordinatorUrl));
         }
-        else {
-            return Mono.error(loginFailedError(response, coordinatorUrl));
-        }
+        return Mono.error(loginFailedError(response, coordinatorUrl));
     }
 
     private String getSessionCookie(ClientResponse response, String coordinatorUrl)
