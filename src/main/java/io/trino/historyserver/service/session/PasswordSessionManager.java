@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static io.trino.historyserver.util.HttpUtils.UI_LOGIN_PATH;
+import static io.trino.historyserver.util.HttpUtils.TRINO_UI_COOKIE;
+import static io.trino.historyserver.util.HttpUtils.TRINO_UI_LOGIN_PATH;
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 
 import io.trino.historyserver.exception.TrinoAuthFailed;
@@ -49,7 +50,7 @@ public class PasswordSessionManager
 
     private String fetchSessionCookie(String coordinatorUrl)
     {
-        String url = coordinatorUrl + UI_LOGIN_PATH;
+        String url = coordinatorUrl + TRINO_UI_LOGIN_PATH;
 
         String cookie = webClient.post()
                 .uri(url)
@@ -85,7 +86,7 @@ public class PasswordSessionManager
     private String extractSessionCookie(List<String> cookies, String coordinatorUrl)
     {
         return cookies.stream()
-                .filter(cookie -> cookie.startsWith("Trino-UI-Token"))
+                .filter(cookie -> cookie.startsWith(TRINO_UI_COOKIE))
                 .findFirst()
                 .map(cookie -> cookie.split(";")[0])
                 .orElseThrow(() -> noSessionCookieError(coordinatorUrl));
