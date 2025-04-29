@@ -8,6 +8,8 @@ import io.trino.historyserver.exception.InvalidQueryEventException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
+import static io.trino.historyserver.util.HttpUtils.COORDINATOR_CUSTOM_HEADER;
+
 @Component
 public class QueryReferenceFactory {
 
@@ -37,9 +39,11 @@ public class QueryReferenceFactory {
     }
 
     private String extractCoordinatorUrl(HttpServletRequest request) {
-        String url = request.getHeader("X-Trino-Coordinator-Url");
+        String url = request.getHeader(COORDINATOR_CUSTOM_HEADER);
         if (url == null) {
-            throw new InvalidQueryEventException("Missing X-Trino-Coordinator-Url header");
+            throw new InvalidQueryEventException(
+                    String.format("Missing {} header", COORDINATOR_CUSTOM_HEADER)
+            );
         }
         return url;
     }

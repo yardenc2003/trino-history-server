@@ -20,6 +20,8 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import static io.trino.historyserver.util.HttpUtils.TRINO_UI_QUERY_PATH;
+
 @Slf4j
 @Service
 public class QueryFetcher
@@ -53,7 +55,7 @@ public class QueryFetcher
     public String fetchFullQuery(QueryReference queryRef)
             throws QueryFetchException
     {
-        String url = queryRef.coordinatorUrl() + "/ui/api/query/" + queryRef.queryId();
+        String url = queryRef.coordinatorUrl() + TRINO_UI_QUERY_PATH + queryRef.queryId();
         String baseMessage = String.format(
                 "Error while fetching query %s data from coordinator %s.",
                 queryRef.queryId(),
@@ -83,7 +85,7 @@ public class QueryFetcher
     private List<Map<String, Object>> fetchAllPreviewQueries(QueryReference queryRef)
             throws QueryFetchException
     {
-        String url = queryRef.coordinatorUrl() + "/ui/api/query";
+        String url = queryRef.coordinatorUrl() + TRINO_UI_QUERY_PATH;
         String baseMessage = String.format(
                 "Error while fetching queries preview data from coordinator %s.",
                 queryRef.coordinatorUrl()

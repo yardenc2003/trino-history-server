@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static io.trino.historyserver.util.HttpUtils.UI_LOGIN_PATH;
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 
 import io.trino.historyserver.exception.TrinoAuthFailed;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -47,7 +49,7 @@ public class PasswordSessionManager
 
     private String fetchSessionCookie(String coordinatorUrl)
     {
-        String url = coordinatorUrl + "/ui/login";
+        String url = coordinatorUrl + UI_LOGIN_PATH;
 
         String cookie = webClient.post()
                 .uri(url)
