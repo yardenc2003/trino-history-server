@@ -8,22 +8,26 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class QueryImportService {
+public class QueryImportService
+{
 
     private final QueryFetcher queryFetcher;
     private final QueryStorageHandler queryStorageHandler;
 
-    public QueryImportService(QueryFetcher queryFetcher, QueryStorageHandler queryStorageHandler) {
+    public QueryImportService(QueryFetcher queryFetcher, QueryStorageHandler queryStorageHandler)
+    {
         this.queryFetcher = queryFetcher;
         this.queryStorageHandler = queryStorageHandler;
     }
 
-    public void importQuery(QueryReference queryRef) {
+    public void importQuery(QueryReference queryRef)
+    {
         fetchAndStore(queryRef, true);
         fetchAndStore(queryRef, false);
     }
 
-    private void fetchAndStore(QueryReference queryRef, boolean isPreview) {
+    private void fetchAndStore(QueryReference queryRef, boolean isPreview)
+    {
         String type = isPreview ? "preview" : "full";
 
         String queryJson = isPreview
@@ -32,7 +36,8 @@ public class QueryImportService {
 
         if (isPreview) {
             queryStorageHandler.storePreviewQuery(queryRef, queryJson);
-        } else {
+        }
+        else {
             queryStorageHandler.storeFullQuery(queryRef, queryJson);
         }
 
