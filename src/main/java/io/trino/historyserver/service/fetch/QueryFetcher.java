@@ -144,7 +144,7 @@ public class QueryFetcher
     )
     {
         if (response.statusCode().equals(HttpStatus.UNAUTHORIZED)) {
-            return Mono.error(new ExpiredSessionException());
+            return Mono.error(new ExpiredSessionException("Coordinator session cookie expired"));
         }
 
         return response.bodyToMono(String.class)
