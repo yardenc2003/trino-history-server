@@ -1,3 +1,5 @@
 package io.trino.historyserver.dto;
 
-public record QueryReference(String queryId, String coordinatorUrl) {}
+import lombok.NonNull;
+
+public record QueryReference(@NonNull String queryId, @NonNull String coordinatorUrl) {}
