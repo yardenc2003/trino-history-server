@@ -3,7 +3,6 @@ package io.trino.historyserver.service.client;
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.ExpiredSessionException;
 import io.trino.historyserver.service.session.TrinoSessionManager;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
