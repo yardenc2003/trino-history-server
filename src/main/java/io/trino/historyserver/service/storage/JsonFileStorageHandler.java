@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.function.Function;
 
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.QueryStorageException;
@@ -29,17 +28,7 @@ public class JsonFileStorageHandler
     public void storeQuery(QueryReference queryRef, String queryJson)
             throws QueryStorageException
     {
-        storeQuery(queryRef, queryJson, this::getQueryPath);
-    }
-
-    private void storeQuery(
-            QueryReference queryRef,
-            String queryJson,
-            Function<QueryReference, Path> pathResolver
-    )
-            throws QueryStorageException
-    {
-        Path path = pathResolver.apply(queryRef);
+        Path path = getQueryPath(queryRef);
 
         try {
             this.store(path, queryJson);
@@ -56,14 +45,12 @@ public class JsonFileStorageHandler
         log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), path);
     }
 
-    private String readQuery(
-            QueryReference queryRef,
-            Function<QueryReference, Path> pathResolver
-    )
+    @Override
+    public String readQuery(QueryReference queryRef)
             throws QueryStorageException
     {
         String queryJson;
-        Path path = pathResolver.apply(queryRef);
+        Path path = getQueryPath(queryRef);
 
         try {
             queryJson = this.read(path);
@@ -94,23 +81,8 @@ public class JsonFileStorageHandler
         return Files.readString(fullPath);
     }
 
-
     public Path getQueryPath(QueryReference queryRef)
     {
         return Path.of(baseDir, queryDir, queryRef.queryId() + FILE_EXTENSION);
-    }
-
-    @Override
-    public void readPreviewQuery(QueryReference queryRef)
-            throws QueryStorageException
-    {
-        readQuery(queryRef, this::getPreviewQueryPath);
-    }
-
-    @Override
-    public void readFullQuery(QueryReference queryRef)
-            throws QueryStorageException
-    {
-        readQuery(queryRef, this::getPreviewQueryPath);
     }
 }

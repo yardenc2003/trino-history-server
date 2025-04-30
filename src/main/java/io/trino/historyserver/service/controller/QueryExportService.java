@@ -18,7 +18,7 @@ public class QueryExportService
 
     public String exportQuery(QueryReference queryRef)
     {
-        String queryJson = queryStorageHandler.readFullQuery(queryRef);
+        String queryJson = queryStorageHandler.readQuery(queryRef);
 
         log.info("event=export_query_succeeded queryId={}", queryRef.queryId());
         return queryJson;
