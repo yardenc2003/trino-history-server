@@ -26,7 +26,7 @@ public class QueryReferenceFactory {
     }
 
     public QueryReference create(String queryId) {
-        return new QueryReference(queryId);
+        return new QueryReference(queryId, null);
     }
 
     private String extractQueryId(String json) {
