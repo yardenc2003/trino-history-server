@@ -88,6 +88,13 @@ public class JsonFileStorageHandler
         Files.writeString(fullPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
+    private String read(Path fullPath)
+            throws IOException
+    {
+        return Files.readString(fullPath);
+    }
+
+
     public Path getQueryPath(QueryReference queryRef)
     {
         return Path.of(baseDir, queryDir, queryRef.queryId() + FILE_EXTENSION);
