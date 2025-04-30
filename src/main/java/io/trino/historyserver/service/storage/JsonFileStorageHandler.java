@@ -22,24 +22,14 @@ public class JsonFileStorageHandler
     @Value("${storage.queries-base-dir:./data}")
     private String baseDir;
 
-    @Value("${storage.preview-query-dir:preview}")
-    private String previewQueryDir;
-
-    @Value("${storage.full-query-dir:full}")
-    private String fullQueryDir;
+    @Value("${storage.query-dir:query}")
+    private String queryDir;
 
     @Override
-    public void storePreviewQuery(QueryReference queryRef, String queryJson)
+    public void storeQuery(QueryReference queryRef, String queryJson)
             throws QueryStorageException
     {
-        storeQuery(queryRef, queryJson, this::getPreviewQueryPath);
-    }
-
-    @Override
-    public void storeFullQuery(QueryReference queryRef, String queryJson)
-            throws QueryStorageException
-    {
-        storeQuery(queryRef, queryJson, this::getFullQueryPath);
+        storeQuery(queryRef, queryJson, this::getQueryPath);
     }
 
     private void storeQuery(
@@ -73,13 +63,8 @@ public class JsonFileStorageHandler
         Files.writeString(fullPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    public Path getPreviewQueryPath(QueryReference queryRef)
+    public Path getQueryPath(QueryReference queryRef)
     {
-        return Path.of(baseDir, previewQueryDir, queryRef.queryId() + FILE_EXTENSION);
-    }
-
-    public Path getFullQueryPath(QueryReference queryRef)
-    {
-        return Path.of(baseDir, fullQueryDir, queryRef.queryId() + FILE_EXTENSION);
+        return Path.of(baseDir, queryDir, queryRef.queryId() + FILE_EXTENSION);
     }
 }

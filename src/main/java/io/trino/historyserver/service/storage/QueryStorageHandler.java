@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface QueryStorageHandler {
-    void storePreviewQuery(QueryReference queryRef, String queryJson)
-            throws QueryStorageException;
-    void storeFullQuery(QueryReference queryRef, String queryJson)
+    void storeQuery(QueryReference queryRef, String queryJson)
             throws QueryStorageException;
 }

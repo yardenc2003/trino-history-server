@@ -42,7 +42,7 @@ public class QueryReferenceFactory {
         String url = request.getHeader(COORDINATOR_CUSTOM_HEADER);
         if (url == null) {
             throw new InvalidQueryEventException(
-                    String.format("Missing {} header", COORDINATOR_CUSTOM_HEADER)
+                    String.format("Missing %s header", COORDINATOR_CUSTOM_HEADER)
             );
         }
         return url;

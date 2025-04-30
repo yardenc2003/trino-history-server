@@ -22,25 +22,9 @@ public class QueryImportService
 
     public void importQuery(QueryReference queryRef)
     {
-        fetchAndStore(queryRef, true);
-        fetchAndStore(queryRef, false);
-    }
+        String queryJson = queryFetcher.fetchQuery(queryRef);
+        queryStorageHandler.storeQuery(queryRef, queryJson);
 
-    private void fetchAndStore(QueryReference queryRef, boolean isPreview)
-    {
-        String type = isPreview ? "preview" : "full";
-
-        String queryJson = isPreview
-                ? queryFetcher.fetchPreviewQuery(queryRef)
-                : queryFetcher.fetchFullQuery(queryRef);
-
-        if (isPreview) {
-            queryStorageHandler.storePreviewQuery(queryRef, queryJson);
-        }
-        else {
-            queryStorageHandler.storeFullQuery(queryRef, queryJson);
-        }
-
-        log.info("event=import_{}_query_succeeded queryId={}", type, queryRef.queryId());
+        log.info("event=import_query_succeeded queryId={}", queryRef.queryId());
     }
 }
