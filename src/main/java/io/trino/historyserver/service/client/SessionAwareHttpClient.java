@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-@Slf4j
 @Service
 public class SessionAwareHttpClient
 {
@@ -26,11 +25,9 @@ public class SessionAwareHttpClient
     public <T> T runWithSessionRetry(QueryReference queryRef, Function<WebClient, Mono<T>> requestLogic) {
         String cookie = sessionManager.getSessionCookie(queryRef.coordinatorUrl());
 
-        log.info("run with cookie");
         try {
             return requestLogic.apply(webClientWithCookie(cookie)).block();
         } catch (ExpiredSessionException e) {
-            log.info("re-run with cookie");
             sessionManager.refreshSessionCookie(queryRef.coordinatorUrl());
             cookie = sessionManager.getSessionCookie(queryRef.coordinatorUrl());
 
