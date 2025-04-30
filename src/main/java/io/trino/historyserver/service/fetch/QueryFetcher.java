@@ -2,22 +2,18 @@ package io.trino.historyserver.service.fetch;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.ExpiredSessionException;
 import io.trino.historyserver.exception.QueryFetchException;
-import io.trino.historyserver.service.session.PasswordSessionManager;
-import io.trino.historyserver.service.session.TrinoSessionManager;
+import io.trino.historyserver.service.client.SessionAwareHttpClient;
 import io.trino.historyserver.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import static io.trino.historyserver.util.HttpUtils.TRINO_UI_QUERY_PATH;
@@ -26,14 +22,12 @@ import static io.trino.historyserver.util.HttpUtils.TRINO_UI_QUERY_PATH;
 @Service
 public class QueryFetcher
 {
-    private final TrinoSessionManager sessionManager;
-    private final WebClient webClient;
+    private final SessionAwareHttpClient sessionAwareHttpClient;
     private final JsonUtils jsonUtils;
 
-    public QueryFetcher(PasswordSessionManager sessionManager, WebClient webClient, JsonUtils jsonUtils)
+    public QueryFetcher(SessionAwareHttpClient sessionAwareHttpClient, JsonUtils jsonUtils)
     {
-        this.sessionManager = sessionManager;
-        this.webClient = webClient;
+        this.sessionAwareHttpClient = sessionAwareHttpClient;
         this.jsonUtils = jsonUtils;
     }
 
@@ -55,27 +49,25 @@ public class QueryFetcher
     public String fetchFullQuery(QueryReference queryRef)
             throws QueryFetchException
     {
-        String url = queryRef.coordinatorUrl() + TRINO_UI_QUERY_PATH + queryRef.queryId();
+        String url = queryRef.coordinatorUrl() + TRINO_UI_QUERY_PATH + "/" + queryRef.queryId();
         String baseMessage = String.format(
                 "Error while fetching query %s data from coordinator %s.",
                 queryRef.queryId(),
                 queryRef.coordinatorUrl()
         );
 
-        String queryJson = runWithSessionRetry(queryRef,
-                cookie ->
-                        webClient.get()
-                                .uri(url)
-                                .header(HttpHeaders.COOKIE, cookie)
-                                .retrieve()
-                                .onStatus(HttpStatusCode::isError,
-                                        response -> createQueryFetchException(
-                                                response,
-                                                baseMessage,
-                                                queryRef
-                                        )
+        String queryJson = sessionAwareHttpClient.runWithSessionRetry(queryRef,
+                client -> client.get()
+                        .uri(url)
+                        .retrieve()
+                        .onStatus(HttpStatusCode::isError,
+                                response -> createQueryFetchException(
+                                        response,
+                                        baseMessage,
+                                        queryRef
                                 )
-                                .bodyToMono(String.class)
+                        )
+                        .bodyToMono(String.class)
         );
 
         log.info("event=query_fetch_succeeded type=success queryId={} coordinator={}", queryRef.queryId(), queryRef.coordinatorUrl());
@@ -91,10 +83,9 @@ public class QueryFetcher
                 queryRef.coordinatorUrl()
         );
 
-        List<Map<String, Object>> queries = runWithSessionRetry(queryRef, cookie ->
-                webClient.get()
+        List<Map<String, Object>> queries = sessionAwareHttpClient.runWithSessionRetry(queryRef,
+                client ->client.get()
                         .uri(url)
-                        .header(HttpHeaders.COOKIE, cookie)
                         .retrieve()
                         .onStatus(HttpStatusCode::isError,
                                 response -> createQueryFetchException(
@@ -108,21 +99,6 @@ public class QueryFetcher
 
         log.info("event=queries_fetch_succeeded type=success queryId={} coordinator={}", queryRef.queryId(), queryRef.coordinatorUrl());
         return queries;
-    }
-
-    private <T> T runWithSessionRetry(QueryReference queryRef, Function<String, Mono<T>> requestLogic)
-    {
-        String cookie = sessionManager.getSessionCookie(queryRef.coordinatorUrl());
-
-        try {
-            return requestLogic.apply(cookie).block();
-        }
-        catch (ExpiredSessionException e) {
-            sessionManager.refreshSessionCookie(queryRef.coordinatorUrl());
-            cookie = sessionManager.getSessionCookie(queryRef.coordinatorUrl());
-
-            return requestLogic.apply(cookie).block();
-        }
     }
 
     private QueryFetchException queryNotFoundError(QueryReference queryRef)
