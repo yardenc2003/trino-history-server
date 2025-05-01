@@ -32,7 +32,7 @@ public class QueryExportController
     }
 
     @GetMapping("/{queryId}")
-    public ResponseEntity<String> completeQueryNotify(@PathVariable String queryId)
+    public ResponseEntity<String> getQueryJson(@PathVariable String queryId)
     {
         log.info("event=received_query_read_event queryId={}", queryId);
         QueryReference queryRef = queryReferenceFactory.create(queryId);
