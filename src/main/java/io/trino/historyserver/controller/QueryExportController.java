@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/ui/api/query")
-@CrossOrigin(origins = "*")
 public class QueryExportController
 {
     private final QueryExportService queryExportService;
