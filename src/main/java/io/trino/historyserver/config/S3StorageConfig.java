@@ -16,6 +16,9 @@ import java.net.URI;
 @ConditionalOnProperty(name = "storage.type", havingValue = "s3")
 public class S3StorageConfig {
 
+    @Value("${storage.s3.region}")
+    private String region;
+
     @Value("${storage.s3.endpoint}")
     private String endpoint;
 
@@ -29,7 +32,7 @@ public class S3StorageConfig {
     public S3Client s3Client() {
         return S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
-                .region(Region.of("us-east-1")) // dummy region
+                .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)
                 ))
