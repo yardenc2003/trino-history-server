@@ -9,17 +9,16 @@ import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.QueryStorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@ConditionalOnProperty(name = "storage.type", havingValue = "file")
 public class JsonFileStorageHandler
         implements QueryStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
-
-    @Value("${storage.queries-base-dir:./data}")
-    private String baseDir;
 
     @Value("${storage.query-dir:query}")
     private String queryDir;
@@ -83,6 +82,6 @@ public class JsonFileStorageHandler
 
     public Path getQueryPath(QueryReference queryRef)
     {
-        return Path.of(baseDir, queryDir, queryRef.queryId() + FILE_EXTENSION);
+        return Path.of(queryDir, queryRef.queryId() + FILE_EXTENSION);
     }
 }
