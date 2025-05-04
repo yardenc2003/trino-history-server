@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.QueryStorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +24,10 @@ public class JsonFileStorageHandler
     private String queryDir;
 
     @Override
-    public void storeQuery(QueryReference queryRef, String queryJson)
+    public void storeQuery(String queryId, String queryJson)
             throws QueryStorageException
     {
-        Path path = getQueryPath(queryRef);
+        Path path = getQueryPath(queryId);
 
         try {
             this.store(path, queryJson);
@@ -39,18 +38,18 @@ public class JsonFileStorageHandler
                             "Failed to write query %s JSON to path \"%s\", reason: %s",
                             queryRef.queryId(), path, e.toString()
                     ),
-                    queryRef.queryId()
+                    queryId
             );
         }
-        log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), path);
+        log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryId, path);
     }
 
     @Override
-    public String readQuery(QueryReference queryRef)
+    public String readQuery(String queryId)
             throws QueryStorageException
     {
         String queryJson;
-        Path path = getQueryPath(queryRef);
+        Path path = getQueryPath(queryId);
 
         try {
             queryJson = this.read(path);
@@ -61,10 +60,10 @@ public class JsonFileStorageHandler
                             "Failed to read query %s JSON from path \"%s\", reason: %s",
                             queryRef.queryId(), path, e.toString()
                     ),
-                    queryRef.queryId()
+                    queryId
             );
         }
-        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), path);
+        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryId, path);
         return queryJson;
     }
 
@@ -81,8 +80,8 @@ public class JsonFileStorageHandler
         return Files.readString(fullPath);
     }
 
-    public Path getQueryPath(QueryReference queryRef)
+    public Path getQueryPath(String queryId)
     {
-        return Path.of(baseDir, queryDir, queryRef.queryId() + FILE_EXTENSION);
+        return Path.of(baseDir, queryDir, queryId + FILE_EXTENSION);
     }
 }
