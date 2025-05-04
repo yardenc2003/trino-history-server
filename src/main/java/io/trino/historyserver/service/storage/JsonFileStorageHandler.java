@@ -36,7 +36,7 @@ public class JsonFileStorageHandler
             throw new QueryStorageException(
                     String.format(
                             "Failed to write query %s JSON to path \"%s\", reason: %s",
-                            queryRef.queryId(), path, e.toString()
+                            queryId, path, e
                     ),
                     queryId
             );
@@ -58,7 +58,7 @@ public class JsonFileStorageHandler
             throw new QueryStorageException(
                     String.format(
                             "Failed to read query %s JSON from path \"%s\", reason: %s",
-                            queryRef.queryId(), path, e.toString()
+                            queryId, path, e
                     ),
                     queryId
             );
