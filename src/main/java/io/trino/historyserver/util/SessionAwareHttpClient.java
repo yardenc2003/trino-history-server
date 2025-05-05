@@ -1,4 +1,4 @@
-package io.trino.historyserver.service.client;
+package io.trino.historyserver.util;
 
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.ExpiredSessionException;

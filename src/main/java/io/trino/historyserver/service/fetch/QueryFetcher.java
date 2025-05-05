@@ -3,7 +3,7 @@ package io.trino.historyserver.service.fetch;
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.ExpiredSessionException;
 import io.trino.historyserver.exception.QueryFetchException;
-import io.trino.historyserver.service.client.SessionAwareHttpClient;
+import io.trino.historyserver.util.SessionAwareHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
