@@ -19,9 +19,6 @@ public class LocalFileSystemStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
 
-    @Value("${storage.queries-base-dir:./data}")
-    private String baseDir;
-
     @Value("${storage.query-dir:query}")
     private String queryDir;
 
