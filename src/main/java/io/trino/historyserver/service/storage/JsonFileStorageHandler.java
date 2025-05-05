@@ -62,7 +62,7 @@ public class JsonFileStorageHandler
                     queryId
             );
         }
-        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), path);
+        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryId, path);
         return queryJson;
     }
 

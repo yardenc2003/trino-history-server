@@ -1,6 +1,5 @@
 package io.trino.historyserver.service.storage;
 
-import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.QueryStorageException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,11 +37,11 @@ public class S3StorageHandler
     private String queryDir;
 
     @Override
-    public void storeQuery(QueryReference queryRef, String queryJson)
+    public void storeQuery(String queryId, String queryJson)
             throws QueryStorageException
     {
         ensureBucketExists();
-        String key = generateQueryKey(queryRef);
+        String key = generateQueryKey(queryId);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -57,19 +56,19 @@ public class S3StorageHandler
             throw new QueryStorageException(
                     String.format(
                             "Failed to write query %s JSON to path \"%s\" (bucket: %s), reason: %s",
-                            queryRef.queryId(), key, bucketName, e.toString()
+                            queryId, key, bucketName, e
                     ),
-                    queryRef.queryId()
+                    queryId
             );
         }
     }
 
     @Override
-    public String readQuery(QueryReference queryRef)
+    public String readQuery(String queryId)
             throws QueryStorageException
     {
         String queryJson;
-        String key = generateQueryKey(queryRef);
+        String key = generateQueryKey(queryId);
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
@@ -83,12 +82,12 @@ public class S3StorageHandler
             throw new QueryStorageException(
                     String.format(
                             "Failed to read query %s JSON from path \"%s\" (bucket: %s), reason: %s",
-                            queryRef.queryId(), key, bucketName, e.toString()
+                            queryId, key, bucketName, e
                     ),
-                    queryRef.queryId()
+                    queryId
             );
         }
-        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), key);
+        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryId, key);
         return queryJson;
     }
 
@@ -102,9 +101,9 @@ public class S3StorageHandler
         }
     }
 
-    public String generateQueryKey(QueryReference queryRef)
+    public String generateQueryKey(String queryId)
     {
-        return Path.of(queryDir, queryRef.queryId() + FILE_EXTENSION).toString();
+        return Path.of(queryDir, queryId + FILE_EXTENSION).toString();
     }
 }
 
