@@ -52,18 +52,6 @@ public class QueryFetcher
         return queryJson;
     }
 
-    private QueryFetchException queryNotFoundError(QueryReference queryRef)
-    {
-        return new QueryFetchException(
-                String.format(
-                        "Query %s was not found at coordinator %s",
-                        queryRef.queryId(),
-                        queryRef.coordinatorUrl()
-                ),
-                queryRef.queryId()
-        );
-    }
-
     private Mono<QueryFetchException> createQueryFetchException(
             ClientResponse response,
             String baseMessage,

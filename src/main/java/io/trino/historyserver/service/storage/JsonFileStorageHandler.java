@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.function.Function;
 
-import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.QueryStorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,20 +24,10 @@ public class JsonFileStorageHandler
     private String queryDir;
 
     @Override
-    public void storeQuery(QueryReference queryRef, String queryJson)
+    public void storeQuery(String queryId, String queryJson)
             throws QueryStorageException
     {
-        storeQuery(queryRef, queryJson, this::getQueryPath);
-    }
-
-    private void storeQuery(
-            QueryReference queryRef,
-            String queryJson,
-            Function<QueryReference, Path> pathResolver
-    )
-            throws QueryStorageException
-    {
-        Path path = pathResolver.apply(queryRef);
+        Path path = getQueryPath(queryId);
 
         try {
             this.store(path, queryJson);
@@ -47,13 +35,36 @@ public class JsonFileStorageHandler
         catch (IOException e) {
             throw new QueryStorageException(
                     String.format(
-                            "Failed to write query %s JSON to file. path=%s reason=%s",
-                            queryRef.queryId(), path, e.getMessage()
+                            "Failed to write query %s JSON to path \"%s\", reason: %s",
+                            queryId, path, e
                     ),
-                    queryRef.queryId()
+                    queryId
             );
         }
-        log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryRef.queryId(), path);
+        log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryId, path);
+    }
+
+    @Override
+    public String readQuery(String queryId)
+            throws QueryStorageException
+    {
+        String queryJson;
+        Path path = getQueryPath(queryId);
+
+        try {
+            queryJson = this.read(path);
+        }
+        catch (IOException e) {
+            throw new QueryStorageException(
+                    String.format(
+                            "Failed to read query %s JSON from path \"%s\", reason: %s",
+                            queryId, path, e
+                    ),
+                    queryId
+            );
+        }
+        log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryId, path);
+        return queryJson;
     }
 
     private void store(Path fullPath, String content)
@@ -63,8 +74,14 @@ public class JsonFileStorageHandler
         Files.writeString(fullPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    public Path getQueryPath(QueryReference queryRef)
+    private String read(Path fullPath)
+            throws IOException
     {
-        return Path.of(baseDir, queryDir, queryRef.queryId() + FILE_EXTENSION);
+        return Files.readString(fullPath);
+    }
+
+    public Path getQueryPath(String queryId)
+    {
+        return Path.of(baseDir, queryDir, queryId + FILE_EXTENSION);
     }
 }
