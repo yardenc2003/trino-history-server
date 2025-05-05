@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.BucketAlreadyOwnedByYouException;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
@@ -97,11 +98,20 @@ public class S3StorageHandler
         try {
             s3Client.headBucket(request -> request.bucket(bucketName));
         }
-        catch (NoSuchBucketException exception) {
-            s3Client.createBucket(request -> request.bucket(bucketName));
+        catch (NoSuchBucketException e) {
+            createBucketIfNotExists();
         }
     }
 
+    private void createBucketIfNotExists() {
+        try {
+            s3Client.createBucket(request -> request.bucket(bucketName));
+            s3Client.createBucket(request -> request.bucket(bucketName));
+        }
+        catch (BucketAlreadyOwnedByYouException e) {
+            log.warn("event=bucket_create_skipped type=warning reason=bucket_already_exists bucket=\"{}\"", bucketName);
+        }
+    }
     public String generateQueryKey(String queryId)
     {
         return Path.of(queryDir, queryId + FILE_EXTENSION).toString();
