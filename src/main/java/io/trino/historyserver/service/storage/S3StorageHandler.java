@@ -61,6 +61,7 @@ public class S3StorageHandler
                     queryId
             );
         }
+        log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryId, key);
     }
 
     @Override
