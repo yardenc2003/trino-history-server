@@ -112,7 +112,7 @@ public class S3StorageHandler
             log.warn("event=bucket_create_skipped type=warning reason=bucket_already_exists bucket=\"{}\"", bucketName);
         }
     }
-    public String generateQueryKey(String queryId)
+    private String generateQueryKey(String queryId)
     {
         return Path.of(queryDir, queryId + FILE_EXTENSION).toString();
     }
