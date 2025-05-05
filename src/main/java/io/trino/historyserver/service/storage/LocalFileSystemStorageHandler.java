@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @ConditionalOnProperty(name = "storage.type", havingValue = "file")
-public class JsonFileStorageHandler
+public class LocalFileSystemStorageHandler
         implements QueryStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
