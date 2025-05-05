@@ -1,8 +1,6 @@
 package io.trino.historyserver.controller;
 
-import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.service.controller.QueryExportService;
-import io.trino.historyserver.util.QueryReferenceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class QueryExportController
 {
     private final QueryExportService queryExportService;
-    private final QueryReferenceFactory queryReferenceFactory;
 
-    public QueryExportController(QueryExportService queryExportService, QueryReferenceFactory queryReferenceFactory)
+    public QueryExportController(QueryExportService queryExportService)
     {
         this.queryExportService = queryExportService;
-        this.queryReferenceFactory = queryReferenceFactory;
     }
 
     @GetMapping
@@ -34,9 +30,8 @@ public class QueryExportController
     public ResponseEntity<String> getQueryJson(@PathVariable String queryId)
     {
         log.info("event=received_query_read_event queryId={}", queryId);
-        QueryReference queryRef = queryReferenceFactory.create(queryId);
 
-        String queryJson = queryExportService.exportQuery(queryRef);
+        String queryJson = queryExportService.exportQuery(queryId);
 
         return ResponseEntity
                 .ok()

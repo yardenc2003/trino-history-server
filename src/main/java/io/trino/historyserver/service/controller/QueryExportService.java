@@ -1,6 +1,5 @@
 package io.trino.historyserver.service.controller;
 
-import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.service.storage.QueryStorageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,11 +15,11 @@ public class QueryExportService
         this.queryStorageHandler = queryStorageHandler;
     }
 
-    public String exportQuery(QueryReference queryRef)
+    public String exportQuery(String queryId)
     {
-        String queryJson = queryStorageHandler.readQuery(queryRef);
+        String queryJson = queryStorageHandler.readQuery(queryId);
 
-        log.info("event=export_query_succeeded queryId={}", queryRef.queryId());
+        log.info("event=export_query_succeeded queryId={}", queryId);
         return queryJson;
     }
 }
