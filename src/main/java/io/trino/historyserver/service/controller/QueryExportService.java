@@ -1,6 +1,6 @@
 package io.trino.historyserver.service.controller;
 
-import io.trino.historyserver.service.storage.QueryStorageHandler;
+import io.trino.historyserver.service.storage.RetryingStorageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -8,16 +8,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class QueryExportService
 {
-    private final QueryStorageHandler queryStorageHandler;
+    private final RetryingStorageHandler storageHandler;
 
-    public QueryExportService(QueryStorageHandler queryStorageHandler)
+    public QueryExportService(RetryingStorageHandler storageHandler)
     {
-        this.queryStorageHandler = queryStorageHandler;
+        this.storageHandler = storageHandler;
     }
 
     public String exportQuery(String queryId)
     {
-        String queryJson = queryStorageHandler.readQuery(queryId);
+        String queryJson = storageHandler.readQuery(queryId);
 
         log.info("event=export_query_succeeded queryId={}", queryId);
         return queryJson;

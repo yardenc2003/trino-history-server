@@ -2,7 +2,7 @@ package io.trino.historyserver.service.controller;
 
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.service.fetch.QueryFetcher;
-import io.trino.historyserver.service.storage.QueryStorageHandler;
+import io.trino.historyserver.service.storage.RetryingStorageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,18 +12,18 @@ public class QueryImportService
 {
 
     private final QueryFetcher queryFetcher;
-    private final QueryStorageHandler queryStorageHandler;
+    private final RetryingStorageHandler storageHandler;
 
-    public QueryImportService(QueryFetcher queryFetcher, QueryStorageHandler queryStorageHandler)
+    public QueryImportService(QueryFetcher queryFetcher, RetryingStorageHandler storageHandler)
     {
         this.queryFetcher = queryFetcher;
-        this.queryStorageHandler = queryStorageHandler;
+        this.storageHandler = storageHandler;
     }
 
     public void importQuery(QueryReference queryRef)
     {
         String queryJson = queryFetcher.fetchQuery(queryRef);
-        queryStorageHandler.storeQuery(queryRef.queryId(), queryJson);
+        storageHandler.storeQuery(queryRef.queryId(), queryJson);
 
         log.info("event=import_query_succeeded queryId={}", queryRef.queryId());
     }
