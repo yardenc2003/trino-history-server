@@ -7,4 +7,9 @@ public class ExpiredSessionException
     {
         super(message);
     }
+
+    public ExpiredSessionException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }

@@ -7,4 +7,9 @@ public class QueryFetchException
     {
         super(message, queryId);
     }
+
+    public QueryFetchException(String message, String queryId, Throwable cause)
+    {
+        super(message, queryId, cause);
+    }
 }

@@ -7,4 +7,9 @@ public class TrinoAuthFailed
     {
         super(message);
     }
+
+    public TrinoAuthFailed(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }

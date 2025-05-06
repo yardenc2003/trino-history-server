@@ -56,10 +56,10 @@ public class S3StorageHandler
         catch (S3Exception e) {
             throw new QueryStorageException(
                     String.format(
-                            "Failed to write query %s JSON to key \"%s\" (bucket: %s), reason: %s",
-                            queryId, key, bucketName, e
+                            "Failed to write query %s JSON to key \"%s\" (bucket: \"%s\")",
+                            queryId, key, bucketName
                     ),
-                    queryId
+                    queryId, e
             );
         }
         log.info("event=query_store_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, bucketName);
@@ -83,10 +83,10 @@ public class S3StorageHandler
         catch (S3Exception | IOException e) {
             throw new QueryStorageException(
                     String.format(
-                            "Failed to read query %s JSON from key \"%s\" (bucket: %s), reason: %s",
-                            queryId, key, bucketName, e
+                            "Failed to read query %s JSON from key \"%s\" (bucket: \"%s\")",
+                            queryId, key, bucketName
                     ),
-                    queryId
+                    queryId, e
             );
         }
         log.info("event=query_read_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, bucketName);

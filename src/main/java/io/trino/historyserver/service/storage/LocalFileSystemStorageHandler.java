@@ -34,10 +34,10 @@ public class LocalFileSystemStorageHandler
         catch (IOException e) {
             throw new QueryStorageException(
                     String.format(
-                            "Failed to write query %s JSON to path \"%s\", reason: %s",
-                            queryId, path, e
+                            "Failed to write query %s JSON to path \"%s\".",
+                            queryId, path
                     ),
-                    queryId
+                    queryId, e
             );
         }
         log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryId, path);
@@ -56,10 +56,10 @@ public class LocalFileSystemStorageHandler
         catch (IOException e) {
             throw new QueryStorageException(
                     String.format(
-                            "Failed to read query %s JSON from path \"%s\", reason: %s",
-                            queryId, path, e
+                            "Failed to read query %s JSON from path \"%s\".",
+                            queryId, path
                     ),
-                    queryId
+                    queryId, e
             );
         }
         log.info("event=query_read_succeeded type=success queryId={} path=\"{}\"", queryId, path);
