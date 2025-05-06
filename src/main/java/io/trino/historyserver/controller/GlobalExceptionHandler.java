@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGenericError(Exception e) {
-        log.error("event=unhandled_exception type=server_error message=\"{}\"", e.getMessage(), e);
+        log.error("event=unexpected_exception type=server_error message=\"{}\"", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong: " + e.getMessage());
     }
 }
