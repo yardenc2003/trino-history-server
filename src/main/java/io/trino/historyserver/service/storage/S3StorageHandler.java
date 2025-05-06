@@ -2,6 +2,7 @@ package io.trino.historyserver.service.storage;
 
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
+import io.trino.historyserver.util.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +52,7 @@ public class S3StorageHandler
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
-                .contentType("application/json")
+                .contentType(HttpUtils.JSON_MEDIA_TYPE)
                 .storageClass(storageClass)
                 .build();
 
