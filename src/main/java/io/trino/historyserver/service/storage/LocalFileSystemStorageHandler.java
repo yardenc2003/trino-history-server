@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import io.trino.historyserver.exception.QueryStorageException;
+import io.trino.historyserver.exception.StorageInitializationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -76,8 +77,27 @@ public class LocalFileSystemStorageHandler
     private String read(Path fullPath)
             throws IOException
     {
+        ensureDirectoryExists(fullPath);
         return Files.readString(fullPath);
     }
+
+    private void ensureDirectoryExists(Path fullPath)
+    {
+        Path directory = fullPath.getParent();
+
+        try {
+            Files.createDirectories(directory);
+        }
+        catch (IOException e) {
+            throw new StorageInitializationException(
+                    String.format(
+                            "Failed to create directory \"%s\" existence due to filesystem error.",
+                            directory
+                    ), e
+            );
+        }
+    }
+
 
     public Path getQueryPath(String queryId)
     {

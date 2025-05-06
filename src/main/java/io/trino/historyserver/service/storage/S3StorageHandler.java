@@ -1,12 +1,14 @@
 package io.trino.historyserver.service.storage;
 
 import io.trino.historyserver.exception.QueryStorageException;
+import io.trino.historyserver.exception.StorageInitializationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.BucketAlreadyOwnedByYouException;
@@ -80,7 +82,7 @@ public class S3StorageHandler
         try (ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest)) {
             queryJson = new String(s3Object.readAllBytes(), StandardCharsets.UTF_8);
         }
-        catch (S3Exception | IOException e) {
+        catch (SdkException | IOException e) {
             throw new QueryStorageException(
                     String.format(
                             "Failed to read query %s JSON from key \"%s\" (bucket: \"%s\")",
@@ -99,19 +101,38 @@ public class S3StorageHandler
             s3Client.headBucket(request -> request.bucket(bucketName));
         }
         catch (NoSuchBucketException e) {
+            log.warn("event=bucket_does_not_exist type=warning bucket=\"{}\"", bucketName);
             createBucketIfNotExists();
+        }
+        catch (SdkException e) {
+            throw new StorageInitializationException(
+                    String.format(
+                            "Failed to check bucket \"%s\" existence due to S3 error.",
+                            bucketName
+                    ), e
+            );
         }
     }
 
-    private void createBucketIfNotExists() {
+    private void createBucketIfNotExists()
+    {
         try {
-            s3Client.createBucket(request -> request.bucket(bucketName));
             s3Client.createBucket(request -> request.bucket(bucketName));
         }
         catch (BucketAlreadyOwnedByYouException e) {
-            log.warn("event=bucket_create_skipped type=warning reason=bucket_already_exists bucket=\"{}\"", bucketName);
+            log.warn("event=bucket_create_skipped type=warning bucket=\"{}\"", bucketName);
         }
+        catch (SdkException e) {
+            throw new StorageInitializationException(
+                    String.format(
+                            "Failed to create bucket \"%s\" due to S3 error.",
+                            bucketName
+                    ), e
+            );
+        }
+        log.info("event=bucket_create_succeeded type=success bucket=\"{}\"", bucketName);
     }
+
     private String generateQueryKey(String queryId)
     {
         return Path.of(queryDir, queryId + FILE_EXTENSION).toString();
