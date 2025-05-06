@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.StorageClass;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +31,7 @@ public class S3StorageHandler
         implements QueryStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
+    private final StorageClass storageClass;
 
     private final S3Client s3Client;
 
@@ -50,6 +52,7 @@ public class S3StorageHandler
                 .bucket(bucketName)
                 .key(key)
                 .contentType("application/json")
+                .storageClass(storageClass)
                 .build();
 
         try {

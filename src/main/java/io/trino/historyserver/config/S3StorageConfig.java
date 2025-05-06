@@ -9,18 +9,25 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
+import software.amazon.awssdk.services.s3.model.StorageClass;
 
 import java.net.URI;
 
 @Configuration
 @ConditionalOnProperty(name = "storage.type", havingValue = "s3")
-public class S3StorageConfig {
-
+public class S3StorageConfig
+{
     @Value("${storage.s3.region}")
     private String region;
 
     @Value("${storage.s3.endpoint}")
     private String endpoint;
+
+    @Value("${storage.s3.storage-class:STANDARD}")
+    private String storageClass;
+
+    @Value("${storage.s3.path-style-access:true}")
+    private boolean pathStyleAccess;
 
     @Value("${storage.s3.accessKey}")
     private String accessKey;
@@ -29,7 +36,19 @@ public class S3StorageConfig {
     private String secretKey;
 
     @Bean
-    public S3Client s3Client() {
+    public StorageClass s3StorageClass()
+    {
+        try {
+            return Enum.valueOf(StorageClass.class, storageClass.toUpperCase());
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Invalid S3 storage class: " + storageClass, e);
+        }
+    }
+
+    @Bean
+    public S3Client s3Client()
+    {
         return S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
                 .region(Region.of(region))
@@ -38,7 +57,7 @@ public class S3StorageConfig {
                 ))
                 .serviceConfiguration(
                         S3Configuration.builder()
-                                .pathStyleAccessEnabled(true)
+                                .pathStyleAccessEnabled(pathStyleAccess)
                                 .build()
                 )
                 .build();
