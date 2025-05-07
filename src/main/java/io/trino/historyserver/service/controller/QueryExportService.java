@@ -19,7 +19,6 @@ public class QueryExportService
     {
         String queryJson = storageHandler.readQuery(queryId);
 
-        log.info("event=export_query_succeeded queryId={}", queryId);
         return queryJson;
     }
 }

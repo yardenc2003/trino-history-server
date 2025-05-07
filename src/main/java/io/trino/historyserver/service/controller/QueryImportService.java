@@ -24,7 +24,5 @@ public class QueryImportService
     {
         String queryJson = queryFetcher.fetchQuery(queryRef);
         storageHandler.storeQuery(queryRef.queryId(), queryJson);
-
-        log.info("event=import_query_succeeded queryId={}", queryRef.queryId());
     }
 }

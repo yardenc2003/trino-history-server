@@ -32,6 +32,7 @@ public class QueryExportController
         log.info("event=received_query_read_event queryId={}", queryId);
 
         String queryJson = queryExportService.exportQuery(queryId);
+        log.info("event=export_query_succeeded queryId={}", queryId);
 
         return ResponseEntity
                 .ok()

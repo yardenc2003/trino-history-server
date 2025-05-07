@@ -34,6 +34,7 @@ public class QueryImportController
                 queryRef.coordinatorUrl());
 
         queryImportService.importQuery(queryRef);
+        log.info("event=import_query_succeeded queryId={}", queryRef.queryId());
 
         return String.format(
                 "Query %s was successfully imported.",
