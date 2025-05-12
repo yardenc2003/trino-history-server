@@ -70,14 +70,13 @@ public class LocalFileSystemStorageHandler
     private void store(Path fullPath, String content)
             throws IOException
     {
-        Files.createDirectories(fullPath.getParent());
+        ensureDirectoryExists(fullPath);
         Files.writeString(fullPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     private String read(Path fullPath)
             throws IOException
     {
-        ensureDirectoryExists(fullPath);
         return Files.readString(fullPath);
     }
 
