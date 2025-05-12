@@ -20,12 +20,14 @@ public class RetryingStorageHandler
     private final QueryStorageHandler delegate;
     private final RetryExecutor retryExecutor;
 
+    @Override
     public void storeQuery(String queryId, String queryJson)
             throws QueryStorageException
     {
         retryExecutor.executeWithRetry(() -> delegate.storeQuery(queryId, queryJson), maxRetries, backoffMillis);
     }
 
+    @Override
     public String readQuery(String queryId)
             throws QueryStorageException
     {
