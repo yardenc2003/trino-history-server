@@ -38,6 +38,8 @@ public class LocalFileSystemStorageHandler
                     ), e
             );
         }
+        log.info("event=directory_create_succeeded type=success path=\"{}\"", queryDir);
+
     }
 
     @Override
