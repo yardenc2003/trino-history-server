@@ -126,6 +126,7 @@ public class S3StorageHandler
         }
         catch (BucketAlreadyOwnedByYouException e) {
             log.warn("event=bucket_create_skipped type=warning bucket=\"{}\"", bucketName);
+            return;
         }
         catch (SdkException e) {
             throw new StorageInitializationException(
