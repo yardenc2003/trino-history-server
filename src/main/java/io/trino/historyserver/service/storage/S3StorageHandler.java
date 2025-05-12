@@ -3,6 +3,7 @@ package io.trino.historyserver.service.storage;
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
 import io.trino.historyserver.util.HttpUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,11 +43,30 @@ public class S3StorageHandler
     @Value("${storage.query-dir:query}")
     private String queryDir;
 
+    @PostConstruct
+    private void ensureBucketExists()
+    {
+        try {
+            s3Client.headBucket(request -> request.bucket(bucketName));
+        }
+        catch (NoSuchBucketException e) {
+            log.warn("event=bucket_does_not_exist type=warning bucket=\"{}\"", bucketName);
+            createBucketIfNotExists();
+        }
+        catch (SdkException e) {
+            throw new StorageInitializationException(
+                    String.format(
+                            "Failed to check bucket \"%s\" existence due to S3 error.",
+                            bucketName
+                    ), e
+            );
+        }
+    }
+
     @Override
     public void storeQuery(String queryId, String queryJson)
             throws QueryStorageException
     {
-        ensureBucketExists();
         String key = generateQueryKey(queryId);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -97,25 +117,6 @@ public class S3StorageHandler
         }
         log.info("event=query_read_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, bucketName);
         return queryJson;
-    }
-
-    private void ensureBucketExists()
-    {
-        try {
-            s3Client.headBucket(request -> request.bucket(bucketName));
-        }
-        catch (NoSuchBucketException e) {
-            log.warn("event=bucket_does_not_exist type=warning bucket=\"{}\"", bucketName);
-            createBucketIfNotExists();
-        }
-        catch (SdkException e) {
-            throw new StorageInitializationException(
-                    String.format(
-                            "Failed to check bucket \"%s\" existence due to S3 error.",
-                            bucketName
-                    ), e
-            );
-        }
     }
 
     private void createBucketIfNotExists()

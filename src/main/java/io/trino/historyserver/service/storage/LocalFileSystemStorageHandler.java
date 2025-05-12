@@ -7,6 +7,7 @@ import java.nio.file.StandardOpenOption;
 
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -22,6 +23,22 @@ public class LocalFileSystemStorageHandler
 
     @Value("${storage.query-dir:query}")
     private String queryDir;
+
+    @PostConstruct
+    private void ensureDirectoryExists()
+    {
+        try {
+            Files.createDirectories(Path.of(queryDir));
+        }
+        catch (IOException e) {
+            throw new StorageInitializationException(
+                    String.format(
+                            "Failed to create directory \"%s\" existence due to filesystem error.",
+                            queryDir
+                    ), e
+            );
+        }
+    }
 
     @Override
     public void storeQuery(String queryId, String queryJson)
@@ -70,7 +87,6 @@ public class LocalFileSystemStorageHandler
     private void store(Path fullPath, String content)
             throws IOException
     {
-        ensureDirectoryExists(fullPath);
         Files.writeString(fullPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
@@ -79,24 +95,6 @@ public class LocalFileSystemStorageHandler
     {
         return Files.readString(fullPath);
     }
-
-    private void ensureDirectoryExists(Path fullPath)
-    {
-        Path directory = fullPath.getParent();
-
-        try {
-            Files.createDirectories(directory);
-        }
-        catch (IOException e) {
-            throw new StorageInitializationException(
-                    String.format(
-                            "Failed to create directory \"%s\" existence due to filesystem error.",
-                            directory
-                    ), e
-            );
-        }
-    }
-
 
     public Path getQueryPath(String queryId)
     {
