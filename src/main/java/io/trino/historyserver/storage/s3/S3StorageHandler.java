@@ -1,9 +1,8 @@
-package io.trino.historyserver.service.storage.s3;
+package io.trino.historyserver.storage.s3;
 
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
-import io.trino.historyserver.service.storage.QueryStorageHandler;
-import io.trino.historyserver.util.HttpUtils;
+import io.trino.historyserver.storage.QueryStorageHandler;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +31,10 @@ public class S3StorageHandler
         implements QueryStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
+    public static final String JSON_MEDIA_TYPE = "application/json";
 
     private final S3Client s3Client;
     private final S3StorageProperties props;
-
 
     @PostConstruct
     private void ensureBucketExists()
@@ -66,7 +65,7 @@ public class S3StorageHandler
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(props.getBucket())
                 .key(key)
-                .contentType(HttpUtils.JSON_MEDIA_TYPE)
+                .contentType(JSON_MEDIA_TYPE)
                 .storageClass(props.getStorageClass())
                 .build();
 

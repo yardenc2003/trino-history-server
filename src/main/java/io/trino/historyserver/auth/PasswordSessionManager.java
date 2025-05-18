@@ -1,17 +1,14 @@
-package io.trino.historyserver.service.session;
+package io.trino.historyserver.auth;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static io.trino.historyserver.util.HttpUtils.TRINO_UI_COOKIE;
-import static io.trino.historyserver.util.HttpUtils.TRINO_UI_LOGIN_PATH;
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 
 import io.trino.historyserver.exception.TrinoAuthFailed;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -25,16 +22,16 @@ import reactor.core.publisher.Mono;
 public class PasswordSessionManager
         implements TrinoSessionManager
 {
-    @Value("${trino-api.auth.username:}")
-    private String username;
+    public static final String TRINO_UI_LOGIN_PATH = "/ui/login";
+    public static final String TRINO_UI_COOKIE = "Trino-UI-Token";
 
-    @Value("${trino-api.auth.password:}")
-    private String password;
-
+    private final TrinoAuthProperties authProps;
     private final Map<String, String> sessionCookies = new ConcurrentHashMap<>();
     private final WebClient webClient;
 
-    public PasswordSessionManager(WebClient webClient) {this.webClient = webClient;}
+    public PasswordSessionManager(TrinoAuthProperties authProps, WebClient webClient) {
+        this.authProps = authProps;
+        this.webClient = webClient;}
 
     @Override
     public String getSessionCookie(String coordinatorUrl)
@@ -65,8 +62,8 @@ public class PasswordSessionManager
 
     private BodyInserters.FormInserter<String> createLoginForm()
     {
-        return fromFormData("username", username)
-                .with("password", password);
+        return fromFormData("username", authProps.getUsername())
+                .with("password", authProps.getPassword());
     }
 
     private Mono<String> handleLoginResponse(ClientResponse response, String coordinatorUrl)
@@ -96,7 +93,7 @@ public class PasswordSessionManager
     {
         return new TrinoAuthFailed(
                 String.format(
-                        "The coordinator %s didn't send a session cookie.",
+                        "The coordinator %s didn't send a auth cookie.",
                         coordinatorUrl
                 )
         );

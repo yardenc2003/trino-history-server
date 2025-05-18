@@ -1,8 +1,7 @@
-package io.trino.historyserver.util;
+package io.trino.historyserver.auth;
 
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.ExpiredSessionException;
-import io.trino.historyserver.service.session.TrinoSessionManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

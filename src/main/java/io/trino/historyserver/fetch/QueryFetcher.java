@@ -1,9 +1,9 @@
-package io.trino.historyserver.service.fetch;
+package io.trino.historyserver.fetch;
 
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.ExpiredSessionException;
 import io.trino.historyserver.exception.QueryFetchException;
-import io.trino.historyserver.util.SessionAwareHttpClient;
+import io.trino.historyserver.auth.SessionAwareHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
 
-import static io.trino.historyserver.util.HttpUtils.TRINO_UI_QUERY_PATH;
-
 @Slf4j
 @Service
 public class QueryFetcher
 {
+    public static final String TRINO_UI_QUERY_PATH = "/ui/api/query";
+
     private final SessionAwareHttpClient sessionAwareHttpClient;
 
     public QueryFetcher(SessionAwareHttpClient sessionAwareHttpClient)
@@ -59,7 +59,7 @@ public class QueryFetcher
     )
     {
         if (response.statusCode().equals(HttpStatus.UNAUTHORIZED)) {
-            return Mono.error(new ExpiredSessionException("Coordinator session cookie expired"));
+            return Mono.error(new ExpiredSessionException("Coordinator auth cookie expired"));
         }
 
         return response.bodyToMono(String.class)

@@ -1,4 +1,4 @@
-package io.trino.historyserver.service.session;
+package io.trino.historyserver.auth;
 
 import io.trino.historyserver.exception.TrinoAuthFailed;
 import org.springframework.stereotype.Service;

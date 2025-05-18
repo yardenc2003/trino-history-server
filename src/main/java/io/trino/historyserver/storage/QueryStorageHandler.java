@@ -1,4 +1,4 @@
-package io.trino.historyserver.service.storage;
+package io.trino.historyserver.storage;
 
 import io.trino.historyserver.exception.QueryStorageException;
 import org.springframework.stereotype.Service;

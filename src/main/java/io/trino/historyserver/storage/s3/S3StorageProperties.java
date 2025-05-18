@@ -1,4 +1,4 @@
-package io.trino.historyserver.service.storage.s3;
+package io.trino.historyserver.storage.s3;
 
 import lombok.Getter;
 import lombok.Setter;
