@@ -1,7 +1,8 @@
-package io.trino.historyserver.service.storage;
+package io.trino.historyserver.service.storage.s3;
 
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
+import io.trino.historyserver.service.storage.QueryStorageHandler;
 import io.trino.historyserver.util.HttpUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ import java.nio.file.Path;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(name = "storage.type", havingValue = "s3")
+@ConditionalOnProperty(name = "storage.type", havingValue = "s3") // maybe confusing to have some configs here and the rest somewhere else?
 @RequiredArgsConstructor
 public class S3StorageHandler
         implements QueryStorageHandler

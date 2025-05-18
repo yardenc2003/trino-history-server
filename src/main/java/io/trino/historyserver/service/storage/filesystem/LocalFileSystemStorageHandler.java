@@ -1,4 +1,4 @@
-package io.trino.historyserver.service.storage;
+package io.trino.historyserver.service.storage.filesystem;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,6 +7,7 @@ import java.nio.file.StandardOpenOption;
 
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
+import io.trino.historyserver.service.storage.QueryStorageHandler;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package io.trino.historyserver.config;
+package io.trino.historyserver.service.storage.s3;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
