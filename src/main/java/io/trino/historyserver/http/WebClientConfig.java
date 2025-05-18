@@ -1,4 +1,4 @@
-package io.trino.historyserver.config;
+package io.trino.historyserver.http;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
