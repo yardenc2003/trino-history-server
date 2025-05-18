@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 @Slf4j
 @Component
-public class RetryExecutor
+public class TaskRetryExecutor
 {
     public <T> T executeWithRetry(Supplier<T> task, int maxRetries, long backoffMillis)
     {
