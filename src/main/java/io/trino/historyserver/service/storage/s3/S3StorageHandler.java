@@ -7,7 +7,6 @@ import io.trino.historyserver.util.HttpUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -20,7 +19,6 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-import software.amazon.awssdk.services.s3.model.StorageClass;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,37 +26,32 @@ import java.nio.file.Path;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(name = "storage.type", havingValue = "s3") // maybe confusing to have some configs here and the rest somewhere else?
+@ConditionalOnProperty(name = "storage.type", havingValue = "s3")
 @RequiredArgsConstructor
 public class S3StorageHandler
         implements QueryStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
-    private final StorageClass storageClass;
 
     private final S3Client s3Client;
+    private final S3StorageProperties props;
 
-    @Value("${storage.s3.bucket:history}")
-    private String bucketName;
-
-    @Value("${storage.query-dir:query}")
-    private String queryDir;
 
     @PostConstruct
     private void ensureBucketExists()
     {
         try {
-            s3Client.headBucket(request -> request.bucket(bucketName));
+            s3Client.headBucket(request -> request.bucket(props.getBucket()));
         }
         catch (NoSuchBucketException e) {
-            log.warn("event=bucket_does_not_exist type=warning bucket=\"{}\"", bucketName);
+            log.warn("event=bucket_does_not_exist type=warning bucket=\"{}\"", props.getBucket());
             createBucketIfNotExists();
         }
         catch (SdkException e) {
             throw new StorageInitializationException(
                     String.format(
                             "Failed to check bucket \"%s\" existence due to S3 error.",
-                            bucketName
+                            props.getBucket()
                     ), e
             );
         }
@@ -71,10 +64,10 @@ public class S3StorageHandler
         String key = generateQueryKey(queryId);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket(props.getBucket())
                 .key(key)
                 .contentType(HttpUtils.JSON_MEDIA_TYPE)
-                .storageClass(storageClass)
+                .storageClass(props.getStorageClass())
                 .build();
 
         try {
@@ -84,12 +77,12 @@ public class S3StorageHandler
             throw new QueryStorageException(
                     String.format(
                             "Failed to write query %s JSON to key \"%s\" (bucket: \"%s\")",
-                            queryId, key, bucketName
+                            queryId, key, props.getBucket()
                     ),
                     queryId, e
             );
         }
-        log.info("event=query_store_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, bucketName);
+        log.info("event=query_store_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, props.getBucket());
     }
 
     @Override
@@ -100,7 +93,7 @@ public class S3StorageHandler
         String key = generateQueryKey(queryId);
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket(props.getBucket())
                 .key(key)
                 .build();
 
@@ -111,38 +104,38 @@ public class S3StorageHandler
             throw new QueryStorageException(
                     String.format(
                             "Failed to read query %s JSON from key \"%s\" (bucket: \"%s\")",
-                            queryId, key, bucketName
+                            queryId, key, props.getBucket()
                     ),
                     queryId, e
             );
         }
-        log.info("event=query_read_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, bucketName);
+        log.info("event=query_read_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, props.getBucket());
         return queryJson;
     }
 
     private void createBucketIfNotExists()
     {
         try {
-            s3Client.createBucket(request -> request.bucket(bucketName));
+            s3Client.createBucket(request -> request.bucket(props.getBucket()));
         }
         catch (BucketAlreadyOwnedByYouException e) {
-            log.warn("event=bucket_create_skipped type=warning bucket=\"{}\"", bucketName);
+            log.warn("event=bucket_create_skipped type=warning bucket=\"{}\"", props.getBucket());
             return;
         }
         catch (SdkException e) {
             throw new StorageInitializationException(
                     String.format(
                             "Failed to create bucket \"%s\" due to S3 error.",
-                            bucketName
+                            props.getBucket()
                     ), e
             );
         }
-        log.info("event=bucket_create_succeeded type=success bucket=\"{}\"", bucketName);
+        log.info("event=bucket_create_succeeded type=success bucket=\"{}\"", props.getBucket());
     }
 
     private String generateQueryKey(String queryId)
     {
-        return Path.of(queryDir, queryId + FILE_EXTENSION).toString();
+        return Path.of(props.getQueryDir(), queryId + FILE_EXTENSION).toString();
     }
 }
 

@@ -9,20 +9,25 @@ import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
 import io.trino.historyserver.service.storage.QueryStorageHandler;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
+import reactor.util.annotation.NonNull;
 
+@Getter
+@Setter
 @Slf4j
 @Service
-@ConditionalOnProperty(name = "storage.type", havingValue = "file")
+@ConditionalOnProperty(name = "storage.type", havingValue = "filesystem")
+@ConfigurationProperties(prefix = "storage.filesystem")
 public class LocalFileSystemStorageHandler
         implements QueryStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
 
-    @Value("${storage.query-dir:query}")
     private String queryDir;
 
     @PostConstruct
@@ -40,7 +45,6 @@ public class LocalFileSystemStorageHandler
             );
         }
         log.info("event=directory_create_succeeded type=success path=\"{}\"", queryDir);
-
     }
 
     @Override
