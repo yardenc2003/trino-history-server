@@ -7,4 +7,9 @@ public class InvalidQueryEventException
     {
         super(message);
     }
+
+    public InvalidQueryEventException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }

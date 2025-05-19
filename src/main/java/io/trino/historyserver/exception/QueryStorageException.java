@@ -7,4 +7,9 @@ public class QueryStorageException
     {
         super(message, queryId);
     }
+
+    public QueryStorageException(String message, String queryId, Throwable cause)
+    {
+        super(message, queryId, cause);
+    }
 }

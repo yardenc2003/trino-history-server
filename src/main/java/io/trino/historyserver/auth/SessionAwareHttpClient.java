@@ -1,8 +1,7 @@
-package io.trino.historyserver.service.client;
+package io.trino.historyserver.auth;
 
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.ExpiredSessionException;
-import io.trino.historyserver.service.session.TrinoSessionManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,16 +24,16 @@ public class SessionAwareHttpClient
         String cookie = sessionManager.getSessionCookie(queryRef.coordinatorUrl());
 
         try {
-            return requestLogic.apply(webClientWithCookie(cookie)).block();
+            return requestLogic.apply(webClientWithCookieHeader(cookie)).block();
         } catch (ExpiredSessionException e) {
             sessionManager.refreshSessionCookie(queryRef.coordinatorUrl());
             cookie = sessionManager.getSessionCookie(queryRef.coordinatorUrl());
 
-            return requestLogic.apply(webClientWithCookie(cookie)).block();
+            return requestLogic.apply(webClientWithCookieHeader(cookie)).block();
         }
     }
 
-    private WebClient webClientWithCookie(String cookie) {
+    private WebClient webClientWithCookieHeader(String cookie) {
         return webClient.mutate()
                 .defaultHeader(HttpHeaders.COOKIE, cookie)
                 .build();

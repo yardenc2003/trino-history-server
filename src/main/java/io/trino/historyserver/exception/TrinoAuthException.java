@@ -1,14 +1,14 @@
 package io.trino.historyserver.exception;
 
-public class ExpiredSessionException
+public class TrinoAuthException
         extends RuntimeException
 {
-    public ExpiredSessionException(String message)
+    public TrinoAuthException(String message)
     {
         super(message);
     }
 
-    public ExpiredSessionException(String message, Throwable cause)
+    public TrinoAuthException(String message, Throwable cause)
     {
         super(message, cause);
     }
