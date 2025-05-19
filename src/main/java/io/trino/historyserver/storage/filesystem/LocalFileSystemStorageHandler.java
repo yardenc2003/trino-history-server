@@ -47,13 +47,13 @@ public class LocalFileSystemStorageHandler
     }
 
     @Override
-    public void storeQuery(String queryId, String queryJson)
+    public void writeQuery(String queryId, String queryJson)
             throws QueryStorageException
     {
         Path path = getQueryPath(queryId);
 
         try {
-            this.store(path, queryJson);
+            this.write(path, queryJson);
         }
         catch (IOException e) {
             throw new QueryStorageException(
@@ -64,7 +64,7 @@ public class LocalFileSystemStorageHandler
                     queryId, e
             );
         }
-        log.info("event=query_store_succeeded type=success queryId={} path=\"{}\"", queryId, path);
+        log.info("event=query_write_succeeded type=success queryId={} path=\"{}\"", queryId, path);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class LocalFileSystemStorageHandler
         return queryJson;
     }
 
-    private void store(Path fullPath, String content)
+    private void write(Path fullPath, String content)
             throws IOException
     {
         Files.writeString(fullPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);

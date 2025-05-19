@@ -22,7 +22,7 @@ public class QueryService
     public void createQuery(QueryReference queryRef)
     {
         String queryJson = trinoQueryFetcher.fetchQuery(queryRef);
-        storageHandler.storeQuery(queryRef.queryId(), queryJson);
+        storageHandler.writeQuery(queryRef.queryId(), queryJson);
     }
 
     public String getQuery(String queryId)

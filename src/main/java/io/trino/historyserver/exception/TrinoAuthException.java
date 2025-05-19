@@ -1,14 +1,14 @@
 package io.trino.historyserver.exception;
 
-public class TrinoAuthFailed
+public class TrinoAuthException
         extends RuntimeException
 {
-    public TrinoAuthFailed(String message)
+    public TrinoAuthException(String message)
     {
         super(message);
     }
 
-    public TrinoAuthFailed(String message, Throwable cause)
+    public TrinoAuthException(String message, Throwable cause)
     {
         super(message, cause);
     }

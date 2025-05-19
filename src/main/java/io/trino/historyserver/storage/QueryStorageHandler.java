@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface QueryStorageHandler {
-    void storeQuery(String queryId, String queryJson)
+    void writeQuery(String queryId, String queryJson)
             throws QueryStorageException;
     String readQuery(String queryId)
             throws QueryStorageException;

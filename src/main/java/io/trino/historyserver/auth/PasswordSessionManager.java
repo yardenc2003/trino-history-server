@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 
-import io.trino.historyserver.exception.TrinoAuthFailed;
+import io.trino.historyserver.exception.TrinoAuthException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpHeaders;
@@ -89,9 +89,9 @@ public class PasswordSessionManager
                 .orElseThrow(() -> noSessionCookieError(coordinatorUrl));
     }
 
-    private TrinoAuthFailed noSessionCookieError(String coordinatorUrl)
+    private TrinoAuthException noSessionCookieError(String coordinatorUrl)
     {
-        return new TrinoAuthFailed(
+        return new TrinoAuthException(
                 String.format(
                         "The coordinator %s didn't send a auth cookie.",
                         coordinatorUrl
@@ -99,9 +99,9 @@ public class PasswordSessionManager
         );
     }
 
-    private TrinoAuthFailed loginFailedError(ClientResponse response, String coordinatorUrl)
+    private TrinoAuthException loginFailedError(ClientResponse response, String coordinatorUrl)
     {
-        return new TrinoAuthFailed(
+        return new TrinoAuthException(
                 String.format("Login to coordinator %s failed with status %s. cause=%s",
                         coordinatorUrl,
                         response.statusCode(),

@@ -57,7 +57,7 @@ public class S3StorageHandler
     }
 
     @Override
-    public void storeQuery(String queryId, String queryJson)
+    public void writeQuery(String queryId, String queryJson)
             throws QueryStorageException
     {
         String key = generateQueryKey(queryId);
@@ -81,7 +81,7 @@ public class S3StorageHandler
                     queryId, e
             );
         }
-        log.info("event=query_store_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, props.getBucket());
+        log.info("event=query_write_succeeded type=success queryId={} key=\"{}\" bucket=\"{}\"", queryId, key, props.getBucket());
     }
 
     @Override
