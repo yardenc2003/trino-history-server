@@ -13,13 +13,13 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-public class QueryFetcher
+public class TrinoQueryFetcher
 {
     public static final String TRINO_UI_QUERY_PATH = "/ui/api/query";
 
     private final SessionAwareHttpClient sessionAwareHttpClient;
 
-    public QueryFetcher(SessionAwareHttpClient sessionAwareHttpClient)
+    public TrinoQueryFetcher(SessionAwareHttpClient sessionAwareHttpClient)
     {
         this.sessionAwareHttpClient = sessionAwareHttpClient;
     }

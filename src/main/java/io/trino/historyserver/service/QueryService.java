@@ -1,7 +1,7 @@
 package io.trino.historyserver.service;
 
 import io.trino.historyserver.dto.QueryReference;
-import io.trino.historyserver.fetch.QueryFetcher;
+import io.trino.historyserver.fetch.TrinoQueryFetcher;
 import io.trino.historyserver.storage.RetryingStorageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,18 +10,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class QueryService
 {
-    private final QueryFetcher queryFetcher;
+    private final TrinoQueryFetcher trinoQueryFetcher;
     private final RetryingStorageHandler storageHandler;
 
-    public QueryService(QueryFetcher queryFetcher, RetryingStorageHandler storageHandler)
+    public QueryService(TrinoQueryFetcher trinoQueryFetcher, RetryingStorageHandler storageHandler)
     {
-        this.queryFetcher = queryFetcher;
+        this.trinoQueryFetcher = trinoQueryFetcher;
         this.storageHandler = storageHandler;
     }
 
     public void createQuery(QueryReference queryRef)
     {
-        String queryJson = queryFetcher.fetchQuery(queryRef);
+        String queryJson = trinoQueryFetcher.fetchQuery(queryRef);
         storageHandler.storeQuery(queryRef.queryId(), queryJson);
     }
 
