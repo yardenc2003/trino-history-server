@@ -12,13 +12,13 @@ public class TaskRetryExecutor
 {
     public <T> T executeWithRetry(Supplier<T> task, int maxRetries, long backoffMillis)
     {
-        RuntimeException lastException = null;
+        Exception lastException = null;
 
         for (int i = 1; i <= maxRetries; i++) {
             try {
                 return task.get();
             }
-            catch (RuntimeException e) {
+            catch (Exception e) {
                 lastException = e;
                 log.warn("event=task_retry_failed type=server_error message=\"retry {}/{} failed due to {}\"", i, maxRetries, e.getMessage());
                 if (i < maxRetries) {
@@ -30,8 +30,10 @@ public class TaskRetryExecutor
                 }
             }
         }
-        log.warn("event=task_retry_failed type=server_error message=\"All task {} retries failed due to {}\"" , maxRetries);
-        throw lastException;
+        throw new RetryFailedException(
+                "All task retries failed",
+                lastException
+        );
     }
 
     public void executeWithRetry(Runnable task, int maxRetries, long backoffMillis)
