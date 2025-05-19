@@ -1,5 +1,6 @@
 package io.trino.historyserver.storage.s3;
 
+import io.trino.historyserver.common.GlobalProperties;
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
 import io.trino.historyserver.storage.QueryStorageHandler;
@@ -34,7 +35,9 @@ public class S3StorageHandler
     public static final String JSON_MEDIA_TYPE = "application/json";
 
     private final S3Client s3Client;
+
     private final S3StorageProperties props;
+    private final GlobalProperties globalProps;
 
     @PostConstruct
     private void ensureBucketExists()
@@ -134,7 +137,7 @@ public class S3StorageHandler
 
     private String generateQueryKey(String queryId)
     {
-        return Path.of(props.getQueryDir(), queryId + FILE_EXTENSION).toString();
+        return Path.of(props.getQueryDir(), globalProps.getEnvironment(), queryId + FILE_EXTENSION).toString();
     }
 }
 
