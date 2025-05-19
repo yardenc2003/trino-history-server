@@ -1,6 +1,5 @@
 package io.trino.historyserver.storage.jdbc;
 
-import io.trino.historyserver.common.GlobalProperties;
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
 import io.trino.historyserver.storage.QueryStorageHandler;
@@ -24,19 +23,18 @@ public abstract class JdbcStorageHandler
     protected static final String QUERIES_TABLE = "query_history";
 
     private final JdbcTemplate jdbcTemplate;
-    private final GlobalProperties globalProps;
 
-    protected abstract String getInitializeTableIfNotExists();
+    protected abstract String getInitializeTableStatement();
 
-    protected abstract String getInsertQuery();
+    protected abstract String getInsertQueryStatement();
 
-    protected abstract String getSelectQuery();
+    protected abstract String getSelectQueryStatement();
 
     @PostConstruct
     private void tableInitialization()
     {
         try {
-            jdbcTemplate.execute(getInitializeTableIfNotExists());
+            jdbcTemplate.execute(getInitializeTableStatement());
         }
         catch (DataAccessException e) {
             throw new StorageInitializationException(
@@ -50,14 +48,14 @@ public abstract class JdbcStorageHandler
     }
 
     @Override
-    public void writeQuery(String queryId, String queryJson)
+    public void writeQuery(String queryId, String environment, String queryJson)
             throws QueryStorageException
     {
         try {
             jdbcTemplate.update(
-                    getInsertQuery(),
+                    getInsertQueryStatement(),
                     queryId,
-                    globalProps.getEnvironment(),
+                    environment,
                     queryJson
             );
         }
@@ -83,23 +81,23 @@ public abstract class JdbcStorageHandler
     }
 
     @Override
-    public String readQuery(String queryId)
+    public String readQuery(String queryId, String environment)
             throws QueryStorageException
     {
         String queryJson;
 
         try {
             queryJson = jdbcTemplate.queryForObject(
-                    getSelectQuery(),
-                    new Object[] {queryId, globalProps.getEnvironment()},
-                    String.class
+                    getSelectQueryStatement(),
+                    String.class,
+                    queryId, environment
             );
         }
         catch (EmptyResultDataAccessException e) {
             throw new QueryStorageException(
                     String.format(
                             "Query %s not found in table \"%s\" (environment: \"%s\").",
-                            queryId, QUERIES_TABLE, globalProps.getEnvironment()
+                            queryId, QUERIES_TABLE, environment
                     ),
                     queryId, e
             );

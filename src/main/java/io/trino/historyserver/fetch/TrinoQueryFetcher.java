@@ -4,6 +4,7 @@ import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.exception.ExpiredSessionException;
 import io.trino.historyserver.exception.QueryFetchException;
 import io.trino.historyserver.auth.SessionAwareHttpClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -13,16 +14,12 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TrinoQueryFetcher
 {
     public static final String TRINO_UI_QUERY_PATH = "/ui/api/query";
 
     private final SessionAwareHttpClient sessionAwareHttpClient;
-
-    public TrinoQueryFetcher(SessionAwareHttpClient sessionAwareHttpClient)
-    {
-        this.sessionAwareHttpClient = sessionAwareHttpClient;
-    }
 
     public String fetchQuery(QueryReference queryRef)
             throws QueryFetchException

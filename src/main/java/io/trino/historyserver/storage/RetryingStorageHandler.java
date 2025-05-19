@@ -15,16 +15,16 @@ public class RetryingStorageHandler
     private final TaskRetryExecutor taskRetryExecutor;
 
     @Override
-    public void writeQuery(String queryId, String queryJson)
+    public void writeQuery(String queryId, String environment, String queryJson)
             throws QueryStorageException
     {
-        taskRetryExecutor.executeWithRetry(() -> delegate.writeQuery(queryId, queryJson), props.getMaxRetries(), props.getBackoffMillis());
+        taskRetryExecutor.executeWithRetry(() -> delegate.writeQuery(queryId, environment, queryJson), props.getMaxRetries(), props.getBackoffMillis());
     }
 
     @Override
-    public String readQuery(String queryId)
+    public String readQuery(String queryId, String environment)
             throws QueryStorageException
     {
-        return taskRetryExecutor.executeWithRetry(() -> delegate.readQuery(queryId), props.getMaxRetries(), props.getBackoffMillis());
+        return taskRetryExecutor.executeWithRetry(() -> delegate.readQuery(queryId, environment), props.getMaxRetries(), props.getBackoffMillis());
     }
 }

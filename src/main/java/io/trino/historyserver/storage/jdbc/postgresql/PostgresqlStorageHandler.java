@@ -1,6 +1,5 @@
 package io.trino.historyserver.storage.jdbc.postgresql;
 
-import io.trino.historyserver.common.GlobalProperties;
 import io.trino.historyserver.storage.jdbc.JdbcStorageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,13 +12,13 @@ import org.springframework.stereotype.Service;
 public class PostgresqlStorageHandler
         extends JdbcStorageHandler
 {
-    public PostgresqlStorageHandler(JdbcTemplate jdbcTemplate, GlobalProperties globalProps)
+    public PostgresqlStorageHandler(JdbcTemplate jdbcTemplate)
     {
-        super(jdbcTemplate, globalProps);
+        super(jdbcTemplate);
     }
 
     @Override
-    protected String getInitializeTableIfNotExists()
+    protected String getInitializeTableStatement()
     {
         return String.format("""
                     CREATE TABLE IF NOT EXISTS %s (
@@ -32,7 +31,7 @@ public class PostgresqlStorageHandler
     }
 
     @Override
-    protected String getInsertQuery()
+    protected String getInsertQueryStatement()
     {
         return String.format(
                 "INSERT INTO %s (query_id, environment, query_info) VALUES (?, ?, ?::jsonb)",
@@ -41,7 +40,7 @@ public class PostgresqlStorageHandler
     }
 
     @Override
-    protected String getSelectQuery()
+    protected String getSelectQueryStatement()
     {
         return String.format(
                 "SELECT query_info FROM %s WHERE query_id = ? AND environment = ?",

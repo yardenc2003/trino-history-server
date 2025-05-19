@@ -1,6 +1,5 @@
 package io.trino.historyserver.storage.s3;
 
-import io.trino.historyserver.common.GlobalProperties;
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
 import io.trino.historyserver.storage.QueryStorageHandler;
@@ -35,9 +34,7 @@ public class S3StorageHandler
     public static final String JSON_MEDIA_TYPE = "application/json";
 
     private final S3Client s3Client;
-
     private final S3StorageProperties props;
-    private final GlobalProperties globalProps;
 
     @PostConstruct
     private void ensureBucketExists()
@@ -60,10 +57,10 @@ public class S3StorageHandler
     }
 
     @Override
-    public void writeQuery(String queryId, String queryJson)
+    public void writeQuery(String queryId, String environment, String queryJson)
             throws QueryStorageException
     {
-        String key = generateQueryKey(queryId);
+        String key = generateQueryKey(queryId, environment);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(props.getBucket())
@@ -88,11 +85,11 @@ public class S3StorageHandler
     }
 
     @Override
-    public String readQuery(String queryId)
+    public String readQuery(String queryId, String environment)
             throws QueryStorageException
     {
         String queryJson;
-        String key = generateQueryKey(queryId);
+        String key = generateQueryKey(queryId, environment);
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(props.getBucket())
@@ -135,9 +132,9 @@ public class S3StorageHandler
         log.info("event=bucket_create_succeeded type=success bucket=\"{}\"", props.getBucket());
     }
 
-    private String generateQueryKey(String queryId)
+    private String generateQueryKey(String queryId, String environment)
     {
-        return Path.of(props.getQueryDir(), globalProps.getEnvironment(), queryId + FILE_EXTENSION).toString();
+        return Path.of(props.getQueryDir(), environment, queryId + FILE_EXTENSION).toString();
     }
 }
 
