@@ -11,7 +11,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -23,41 +27,45 @@ public abstract class JdbcStorageHandler
     protected static final String QUERIES_TABLE = "query_history";
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
-    protected abstract String getInitializeTableStatement();
+    protected abstract List<String> initializeStatements();
 
-    protected abstract String getInsertQueryStatement();
+    protected abstract String insertQueryStatement();
 
-    protected abstract String getSelectQueryStatement();
+    protected abstract String selectQueryStatement();
 
     @PostConstruct
-    private void tableInitialization()
+    private void initializeSchema()
     {
-        try {
-            jdbcTemplate.execute(getInitializeTableStatement());
+        for (String sql : initializeStatements()) {
+            try {
+                jdbcTemplate.execute(sql);
+            }
+            catch (DataAccessException e) {
+                throw new StorageInitializationException(
+                        String.format(
+                                "Failed to execute schema initialization SQL: %s", sql
+                        ), e
+                );
+            }
         }
-        catch (DataAccessException e) {
-            throw new StorageInitializationException(
-                    String.format(
-                            "Failed to create table \"%s\".",
-                            QUERIES_TABLE
-                    ), e
-            );
-        }
-        log.info("event=table_create_succeeded type=success table=\"{}\"", QUERIES_TABLE);
+        log.info("event=schema_initialization type=success");
     }
 
     @Override
     public void writeQuery(String queryId, String environment, String queryJson)
             throws QueryStorageException
     {
+        String sql = insertQueryStatement();
+        Map<String, Object> params = Map.of(
+                "queryId", queryId,
+                "environment", environment,
+                "queryJson", queryJson
+        );
+
         try {
-            jdbcTemplate.update(
-                    getInsertQueryStatement(),
-                    queryId,
-                    environment,
-                    queryJson
-            );
+            namedJdbcTemplate.update(sql, params);
         }
         catch (DuplicateKeyException e) {
             throw new QueryStorageException(
@@ -84,14 +92,16 @@ public abstract class JdbcStorageHandler
     public String readQuery(String queryId, String environment)
             throws QueryStorageException
     {
-        String queryJson;
+        String sql = selectQueryStatement();
+        Map<String, Object> params = Map.of(
+                "queryId", queryId,
+                "environment", environment
+        );
 
         try {
-            queryJson = jdbcTemplate.queryForObject(
-                    getSelectQueryStatement(),
-                    String.class,
-                    queryId, environment
-            );
+            String queryJson = namedJdbcTemplate.queryForObject(sql, params, String.class);
+            log.info("event=query_read_succeeded type=success queryId={} table=\"{}\"", queryId, QUERIES_TABLE);
+            return queryJson;
         }
         catch (EmptyResultDataAccessException e) {
             throw new QueryStorageException(
@@ -111,8 +121,5 @@ public abstract class JdbcStorageHandler
                     queryId, e
             );
         }
-        log.info("event=query_read_succeeded type=success queryId={} table=\"{}\"", queryId, QUERIES_TABLE);
-        return queryJson;
     }
 }
-
