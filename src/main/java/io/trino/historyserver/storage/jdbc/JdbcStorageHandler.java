@@ -3,6 +3,7 @@ package io.trino.historyserver.storage.jdbc;
 import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
 import io.trino.historyserver.storage.QueryStorageHandler;
+import io.trino.historyserver.storage.jdbc.dialects.SqlDialect;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,31 +15,23 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Service
 @ConditionalOnProperty(name = "storage.type", havingValue = "jdbc")
 @RequiredArgsConstructor
-public abstract class JdbcStorageHandler
+public class JdbcStorageHandler
         implements QueryStorageHandler
 {
-    protected static final String QUERIES_TABLE = "query_history";
-
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
-
-    protected abstract List<String> initializeStatements();
-
-    protected abstract String insertQueryStatement();
-
-    protected abstract String selectQueryStatement();
+    private final SqlDialect dialect;
 
     @PostConstruct
     private void initializeSchema()
     {
-        for (String sql : initializeStatements()) {
+        for (String sql : dialect.initializeStatements()) {
             try {
                 jdbcTemplate.execute(sql);
             }
@@ -57,7 +50,7 @@ public abstract class JdbcStorageHandler
     public void writeQuery(String queryId, String environment, String queryJson)
             throws QueryStorageException
     {
-        String sql = insertQueryStatement();
+        String sql = dialect.insertQueryStatement();
         Map<String, Object> params = Map.of(
                 "queryId", queryId,
                 "environment", environment,
@@ -70,8 +63,8 @@ public abstract class JdbcStorageHandler
         catch (DuplicateKeyException e) {
             throw new QueryStorageException(
                     String.format(
-                            "Query %s already exists in table \"%s\".",
-                            queryId, QUERIES_TABLE
+                            "Query %s already exists in query history table.",
+                            queryId
                     ),
                     queryId, e
             );
@@ -79,20 +72,20 @@ public abstract class JdbcStorageHandler
         catch (DataAccessException e) {
             throw new QueryStorageException(
                     String.format(
-                            "Failed to write query %s to table \"%s\".",
-                            queryId, QUERIES_TABLE
+                            "Failed to write query %s to query history table.",
+                            queryId
                     ),
                     queryId, e
             );
         }
-        log.info("event=query_store_succeeded type=success queryId={} table=\"{}\"", queryId, QUERIES_TABLE);
+        log.info("event=query_record_write_succeeded type=success queryId={}", queryId);
     }
 
     @Override
     public String readQuery(String queryId, String environment)
             throws QueryStorageException
     {
-        String sql = selectQueryStatement();
+        String sql = dialect.selectQueryStatement();
         Map<String, Object> params = Map.of(
                 "queryId", queryId,
                 "environment", environment
@@ -100,14 +93,14 @@ public abstract class JdbcStorageHandler
 
         try {
             String queryJson = namedJdbcTemplate.queryForObject(sql, params, String.class);
-            log.info("event=query_read_succeeded type=success queryId={} table=\"{}\"", queryId, QUERIES_TABLE);
+            log.info("event=query_record_read_succeeded type=success queryId={}", queryId);
             return queryJson;
         }
         catch (EmptyResultDataAccessException e) {
             throw new QueryStorageException(
                     String.format(
-                            "Query %s not found in table \"%s\" (environment: \"%s\").",
-                            queryId, QUERIES_TABLE, environment
+                            "Query %s not found in query history table (environment: \"%s\").",
+                            queryId, environment
                     ),
                     queryId, e
             );
@@ -115,8 +108,8 @@ public abstract class JdbcStorageHandler
         catch (DataAccessException e) {
             throw new QueryStorageException(
                     String.format(
-                            "Failed to read query %s from table \"%s\".",
-                            queryId, QUERIES_TABLE
+                            "Failed to read query %s from query history table.",
+                            queryId
                     ),
                     queryId, e
             );
