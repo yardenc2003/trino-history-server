@@ -57,10 +57,10 @@ public class S3StorageHandler
     }
 
     @Override
-    public void writeQuery(String queryId, String queryJson)
+    public void writeQuery(String queryId, String environment, String queryJson)
             throws QueryStorageException
     {
-        String key = generateQueryKey(queryId);
+        String key = generateQueryKey(queryId, environment);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(props.getBucket())
@@ -85,11 +85,11 @@ public class S3StorageHandler
     }
 
     @Override
-    public String readQuery(String queryId)
+    public String readQuery(String queryId, String environment)
             throws QueryStorageException
     {
         String queryJson;
-        String key = generateQueryKey(queryId);
+        String key = generateQueryKey(queryId, environment);
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(props.getBucket())
@@ -132,9 +132,9 @@ public class S3StorageHandler
         log.info("event=bucket_create_succeeded type=success bucket=\"{}\"", props.getBucket());
     }
 
-    private String generateQueryKey(String queryId)
+    private String generateQueryKey(String queryId, String environment)
     {
-        return Path.of(props.getQueryDir(), queryId + FILE_EXTENSION).toString();
+        return Path.of(props.getQueryDir(), environment, queryId + FILE_EXTENSION).toString();
     }
 }
 

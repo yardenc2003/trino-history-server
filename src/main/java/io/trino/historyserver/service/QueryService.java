@@ -19,16 +19,14 @@ public class QueryService
         this.storageHandler = storageHandler;
     }
 
-    public void createQuery(QueryReference queryRef)
+    public void createQuery(QueryReference queryRef, String environment)
     {
         String queryJson = trinoQueryFetcher.fetchQuery(queryRef);
-        storageHandler.writeQuery(queryRef.queryId(), queryJson);
+        storageHandler.writeQuery(queryRef.queryId(), environment, queryJson);
     }
 
-    public String getQuery(String queryId)
+    public String getQuery(String queryId, String environment)
     {
-        String queryJson = storageHandler.readQuery(queryId);
-
-        return queryJson;
+        return storageHandler.readQuery(queryId, environment);
     }
 }

@@ -47,10 +47,10 @@ public class LocalFileSystemStorageHandler
     }
 
     @Override
-    public void writeQuery(String queryId, String queryJson)
+    public void writeQuery(String queryId, String environment, String queryJson)
             throws QueryStorageException
     {
-        Path path = getQueryPath(queryId);
+        Path path = getQueryPath(queryId, environment);
 
         try {
             this.write(path, queryJson);
@@ -68,11 +68,11 @@ public class LocalFileSystemStorageHandler
     }
 
     @Override
-    public String readQuery(String queryId)
+    public String readQuery(String queryId, String environment)
             throws QueryStorageException
     {
         String queryJson;
-        Path path = getQueryPath(queryId);
+        Path path = getQueryPath(queryId, environment);
 
         try {
             queryJson = this.read(path);
@@ -102,8 +102,8 @@ public class LocalFileSystemStorageHandler
         return Files.readString(fullPath);
     }
 
-    public Path getQueryPath(String queryId)
+    public Path getQueryPath(String queryId, String environment)
     {
-        return Path.of(queryDir, queryId + FILE_EXTENSION);
+        return Path.of(queryDir, environment, queryId + FILE_EXTENSION);
     }
 }

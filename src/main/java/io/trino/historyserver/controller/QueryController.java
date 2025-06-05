@@ -1,9 +1,11 @@
 package io.trino.historyserver.controller;
 
+import io.trino.historyserver.common.GlobalProperties;
 import io.trino.historyserver.dto.QueryReference;
 import io.trino.historyserver.service.QueryService;
 import io.trino.historyserver.dto.QueryReferenceFactory;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/query")
+@AllArgsConstructor
 public class QueryController
 {
     private final QueryService queryService;
     private final QueryReferenceFactory queryReferenceFactory;
-
-    public QueryController(QueryService queryService, QueryReferenceFactory queryReferenceFactory)
-    {
-        this.queryService = queryService;
-        this.queryReferenceFactory = queryReferenceFactory;
-    }
+    private final GlobalProperties globalProps;
 
     @PostMapping
     public String createQuery(@RequestBody String queryCompletedJson, HttpServletRequest request)
@@ -37,7 +35,7 @@ public class QueryController
                 queryRef.queryId(),
                 queryRef.coordinatorUrl());
 
-        queryService.createQuery(queryRef);
+        queryService.createQuery(queryRef, globalProps.getEnvironment());
         log.info("event=create_query_succeeded queryId={}", queryRef.queryId());
 
         return String.format(
@@ -57,7 +55,7 @@ public class QueryController
     {
         log.info("event=received_query_read_event queryId={}", queryId);
 
-        String queryJson = queryService.getQuery(queryId);
+        String queryJson = queryService.getQuery(queryId, globalProps.getEnvironment());
         log.info("event=get_query_succeeded queryId={}", queryId);
 
         return ResponseEntity
