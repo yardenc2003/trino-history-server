@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -24,7 +23,6 @@ import java.util.Map;
 public class JdbcStorageHandler
         implements QueryStorageHandler
 {
-    private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
     private final SqlDialect dialect;
 
@@ -33,7 +31,7 @@ public class JdbcStorageHandler
     {
         for (String sql : dialect.initializeStatements()) {
             try {
-                jdbcTemplate.execute(sql);
+                namedJdbcTemplate.getJdbcTemplate().execute(sql);
             }
             catch (DataAccessException e) {
                 throw new StorageInitializationException(
