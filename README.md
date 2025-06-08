@@ -100,10 +100,17 @@ storage.filesystem.query-dir=query  # Directory path to store query JSON files
 # S3 storage-specific settings (for 's3' backend)
 storage.s3.query-dir=query           # Directory (prefix) in the S3 bucket to store query files
 storage.s3.storage-class=STANDARD    # S3 storage class (e.g., STANDARD, STANDARD_IA)
-storage.s3.bucket=history            # Name of the S3 bucket
+storage.s3.bucket=history            # S3 bucket name
 storage.s3.region=us-east-1          # S3 bucket region
-storage.s3.endpoint=http://localhost:9000  # S3 endpoint
-storage.s3.access-key=XXXXXXXXXXXXXXXXXXXX  # S3 access key
+storage.s3.endpoint=http://localhost:9000   # S3 endpoint
+storage.s3.access-key=access-key     # S3 access key
+storage.s3.secret-key=secret-key     # S3 secret key
+storage.s3.path-style-access=true    # Use path-style access
+
+# Storage-retry settings (for all storage implementations)
+storage.retry.max-retries=3       # Maximum retry attempts for failed storage operations
+storage.retry.backoff-millis=500  # Time to wait (in milliseconds) between retry attempts
+
 ```
 
 ## Development
