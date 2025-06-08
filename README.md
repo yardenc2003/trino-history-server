@@ -86,7 +86,7 @@ trino.auth.username=your-trino-username   # Username used when fetching query da
 trino.auth.password=your-trino-password   # Password used when fetching query data from Trino coordinators
 
 # Storage backend type (choose one)
-storage.type=jdbc                 # Storage backend type: 'jdbc', 'filesystem', or 's3'
+storage.type=jdbc                         # Storage backend type: 'jdbc', 'filesystem', or 's3'
 
 # JDBC storage-specific settings (for 'jdbc' backend)
 storage.jdbc.dialect=postgresql  # SQL dialect for JDBC (e.g., postgresql, mysql)
@@ -105,7 +105,7 @@ storage.s3.region=us-east-1          # S3 bucket region
 storage.s3.endpoint=https://s3.example.com   # S3 endpoint
 storage.s3.access-key=your-access-key     # S3 access key
 storage.s3.secret-key=your-secret-key     # S3 secret key
-storage.s3.path-style-access=true    # Use path-style access
+storage.s3.path-style-access=true         # Use path-style access
 
 # Storage-retry settings (for all storage implementations)
 storage.retry.max-retries=3       # Maximum retry attempts for failed storage operations
