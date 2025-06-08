@@ -70,6 +70,42 @@ This design decouples data collection from Trino's runtime, enabling long-term q
 
 ```
 
+## Configuration
+
+The History Server can be configured via `application.properties` with the following key settings:
+
+```properties
+# Server settings
+server.port=8080                  # Port on which the History Server runs
+
+# Environment info
+global.environment=test           # Server environment name (e.g., test, prod)
+
+# Trino authentication for coordinator requests
+trino.auth.username=test          # Username used when fetching query data from Trino coordinators
+trino.auth.password=test          # Password used when fetching query data from Trino coordinators
+
+# Storage backend type (choose one)
+storage.type=jdbc                 # Storage backend type: 'jdbc', 'filesystem', or 's3'
+
+# JDBC storage-specific settings (for 'jdbc' backend)
+storage.jdbc.dialect=postgresql  # SQL dialect for JDBC (e.g., postgresql, mysql)
+storage.jdbc.url=jdbc:postgresql://localhost:5432/trino  # JDBC connection URL
+storage.jdbc.username=postgres   # Database username
+storage.jdbc.password=secretpassword   # Database password
+
+# Filesystem storage-specific settings (for 'filesystem' backend)
+storage.filesystem.query-dir=query  # Directory path to store query JSON files
+
+# S3 storage-specific settings (for 's3' backend)
+storage.s3.query-dir=query           # Directory (prefix) in the S3 bucket to store query files
+storage.s3.storage-class=STANDARD    # S3 storage class (e.g., STANDARD, STANDARD_IA)
+storage.s3.bucket=history            # Name of the S3 bucket
+storage.s3.region=us-east-1          # S3 bucket region
+storage.s3.endpoint=http://localhost:9000  # S3 endpoint
+storage.s3.access-key=XXXXXXXXXXXXXXXXXXXX  # S3 access key
+```
+
 ## Development
 
 This project is developed using Java 23 and the Spring Boot framework, with Maven as the build tool (via the Maven Wrapper).
