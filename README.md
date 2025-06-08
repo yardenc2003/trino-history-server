@@ -23,7 +23,7 @@ This endpoint expects:
 
 Upon receiving the event, the server uses the coordinator URL to fetch both the query JSON representations, 
 and persists the document in a configurable storage.
-This design decouples data collection from Trino's runtime, enabling long-term query retention and UI history browsing.
+This design decouples data collection from Trino's runtime, enabling long-term query retention and historical browsing via the [custom Trino UI frontend](https://github.com/yardenc2003/trino/tree/trino-history-server-475.1).
 
 ## Architecture
 
