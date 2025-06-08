@@ -1,7 +1,7 @@
 <h1 align="center"> Trino Query History Server</h1>
 
 <p align="center">
-    <b>Trino is a fast distributed SQL query engine for big data analytics.</b>
+    <b>A backend service for persisting and serving query history from Trino coordinators</b>
 </p>
 
 ## Overview
