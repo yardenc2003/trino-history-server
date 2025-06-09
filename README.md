@@ -1,8 +1,10 @@
-<h1 align="center"> Trino Query History Server</h1>
+<div style="text-align: center">
 
-<p align="center">
-    <b>A backend service for persisting and serving query history from Trino coordinators</b>
-</p>
+<h1>Trino Query History Server</h1>
+
+<p><b>A backend service for persisting and serving query history from Trino coordinators</b></p>
+
+</div>
 
 ## Overview
 
