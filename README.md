@@ -54,7 +54,7 @@ This design decouples data collection from Trino's runtime, enabling long-term q
         ┌─────────────┐
         │     User    │
         └─────┬───────┘
-              │
+              │         query_id
               ▼
     ┌────────────────────────┐
     │ Forked Trino Web UI    │
