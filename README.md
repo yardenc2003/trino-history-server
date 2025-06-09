@@ -21,8 +21,7 @@ This endpoint expects:
 * A [`QueryCompletedEvent`](https://trino.io/docs/475/admin/event-listeners-http.html#configuration-properties) JSON payload
 * An `X-Trino-Coordinator-Url` [custom HTTP header](https://trino.io/docs/475/admin/event-listeners-http.html#custom-http-headers) identifying the source coordinator
 
-Upon receiving the event, the server uses the coordinator URL to fetch both the query JSON representations, 
-and persists the document in a configurable storage.
+Upon receiving the event, the server uses the coordinator URL to fetch the query JSON representation, and persists the document in a configurable storage.
 This design decouples data collection from Trino's runtime, enabling long-term query retention and historical browsing via the [custom Trino UI frontend](https://github.com/yardenc2003/trino/tree/trino-history-server-475.1).
 
 ## Architecture
@@ -54,7 +53,7 @@ This design decouples data collection from Trino's runtime, enabling long-term q
         ┌─────────────┐
         │     User    │
         └─────┬───────┘
-              │         query_id
+              │ queryId
               ▼
     ┌────────────────────────┐
     │ Forked Trino Web UI    │
@@ -82,8 +81,13 @@ server.port=8080                          # Port on which the History Server run
 global.environment=production             # Server environment name (e.g., test, prod)
 
 # Trino authentication for coordinator requests
+# Note: This must be an admin user, as it is used to fetch all query data (across all users) from the coordinators
 trino.auth.username=your-trino-username   # Username used when fetching query data from Trino coordinators
 trino.auth.password=your-trino-password   # Password used when fetching query data from Trino coordinators
+
+# Storage-retry settings (for all storage implementations)
+storage.retry.max-retries=3       # Maximum retry attempts for failed storage operations
+storage.retry.backoff-millis=500  # Time to wait (in milliseconds) between retry attempts
 
 # Storage backend type (choose one)
 storage.type=jdbc                         # Storage backend type: 'jdbc', 'filesystem', or 's3'
@@ -107,10 +111,6 @@ storage.s3.access-key=your-access-key     # S3 access key
 storage.s3.secret-key=your-secret-key     # S3 secret key
 storage.s3.path-style-access=true         # Use path-style access
 
-# Storage-retry settings (for all storage implementations)
-storage.retry.max-retries=3       # Maximum retry attempts for failed storage operations
-storage.retry.backoff-millis=500  # Time to wait (in milliseconds) between retry attempts
-
 ```
 
 ## Development
@@ -122,6 +122,8 @@ This project is developed using Java 23 and the Spring Boot framework, with Mave
 * Java 23+
 
 ### Build the Project
+
+From the **root directory** of the project, run:
 
 ```bash
 ./mvnw clean install
