@@ -6,7 +6,7 @@
 
 ## Overview
 
-The **Trino History Server**, a Spring Boot-based backend service that collects and stores query data from Trino coordinators.
+The **Trino History Server** is a Spring Boot-based backend service that collects and stores query data from Trino coordinators.
 
 When a Trino coordinator emits a [`QueryCompletedEvent`](https://trino.io/docs/475/admin/event-listeners-http.html#configuration-properties),
 it can be sent to the History Server via the [HTTP Event Listener](https://trino.io/docs/475/admin/event-listeners-http.html) mechanism.
@@ -54,7 +54,7 @@ This design decouples data collection from Trino's runtime, enabling long-term q
         ┌─────────────┐
         │     User    │
         └─────┬───────┘
-              │
+              │         query_id
               ▼
     ┌────────────────────────┐
     │ Forked Trino Web UI    │
