@@ -8,8 +8,8 @@
 
 The **Trino History Server**, a Spring Boot-based backend service that collects and stores query data from Trino coordinators.
 
-When a Trino coordinator emits a [`QueryCompletedEvent`](https://github.com/trinodb/trino/blob/master/core/trino-spi/src/main/java/io/trino/spi/eventlistener/QueryCompletedEvent.java),
-it can be sent to the History Server via the [HTTP Event Listener](https://trino.io/docs/current/admin/event-listeners-http.html) mechanism.
+When a Trino coordinator emits a [`QueryCompletedEvent`](https://trino.io/docs/475/admin/event-listeners-http.html#configuration-properties),
+it can be sent to the History Server via the [HTTP Event Listener](https://trino.io/docs/475/admin/event-listeners-http.html) mechanism.
 
 The History Server exposes the following endpoint for this purpose:
 
@@ -18,8 +18,8 @@ POST /api/v1/query/{queryId}
 ```
 
 This endpoint expects:
-* A `QueryCompletedEvent` JSON payload
-* An `X-Trino-Coordinator-Url` custom HTTP header identifying the source coordinator
+* A [`QueryCompletedEvent`](https://trino.io/docs/475/admin/event-listeners-http.html#configuration-properties) JSON payload
+* An `X-Trino-Coordinator-Url` [custom HTTP header](https://trino.io/docs/475/admin/event-listeners-http.html#custom-http-headers) identifying the source coordinator
 
 Upon receiving the event, the server uses the coordinator URL to fetch both the query JSON representations, 
 and persists the document in a configurable storage.
