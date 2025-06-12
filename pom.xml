@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>io.trino.historyserver</groupId>
 	<artifactId>trino-history-server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>trino-history-server</name>
 	<description>Demo history server for Trino</description>
 	<properties>
