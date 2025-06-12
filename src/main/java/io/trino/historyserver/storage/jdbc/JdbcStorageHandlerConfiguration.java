@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnProperty(name = "storage.type", havingValue = "jdbc")
-public class JdbcStorageHandlerConfiguration
+public class JdbcStorageConfiguration
 {
     @Bean
     @ConfigurationProperties("storage.jdbc")
