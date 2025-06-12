@@ -14,7 +14,7 @@
 	<name>trino-history-server</name>
 	<description>Demo history server for Trino</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>23</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
