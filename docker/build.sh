@@ -1,13 +1,8 @@
 #!/bin/bash
 set -e
 
-if [ -z "$1" ]; then
-  echo "Usage: $0 <version> [arch]"
-  exit 1
-fi
-
-VERSION=${1:-1.0.0}
-ARCH=${2:-amd64}
+VERSION=${1:-latest}
+ARCH=${2:-arm64}
 IMAGE_NAME="trino-history-backend:${VERSION}-${ARCH}"
 
 # Paths
@@ -21,7 +16,7 @@ PROJECT_ROOT="${SCRIPT_DIR}/.."
         --pull \
         --build-arg ARCH="${ARCH}" \
         --platform "linux/${ARCH}" \
-        -f Dockerfile \
+        -f ./docker/Dockerfile \
         -t "${IMAGE_NAME}"
 
 echo "✅ Built image: $IMAGE_NAME"
