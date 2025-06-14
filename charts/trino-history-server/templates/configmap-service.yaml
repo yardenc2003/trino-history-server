@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-backend-service-configuration
+  labels:
+    {{- include "trino-history-server.labels" . | nindent 4 }}
+data:
+  BACKEND_SERVICE_URL: http://{{ .Release.Namespace }}.{{ include "trino-history-server.fullname" . }}.svc.cluster.local:{{ .Values.service.port }}
+  BACKEND_QUERY_PATH: {{ .Values.server.queryPath }}
