@@ -51,6 +51,9 @@ server:
     # storage.jdbc.url: <jdbc-connection-url>
     # storage.jdbc.username: <db-username>
     # storage.jdbc.password: <db-password>
+  # Size of the PersistentVolumeClaim used when `storage.type` is set to "filesystem".
+  # This PVC is used to store query history data locally.
+  fileSystemPvcSize: "1Gi"
 
 ingress:
   enabled: false
