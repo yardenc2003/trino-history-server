@@ -1,5 +1,7 @@
 {{- $storageType := index .Values.server.properties "storage.type" | default "filesystem" }}
-{{- $queryPath := index .Values.server.properties "storage.filesystem.query-dir" | default "data/queries" }}
+{{- $queryDir := index .Values.server.properties "storage.filesystem.query-dir" | default "data/queries" }}
+{{- $env := index .Values.server.properties "global.environment" | default "test" }}
+{{- $queryPath := printf "%s/%s" $queryDir $env }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
