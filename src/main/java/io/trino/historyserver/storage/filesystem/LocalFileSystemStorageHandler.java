@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(name = "storage.type", havingValue = "filesystem")
+@ConditionalOnProperty(name = "storage.type", havingValue = "filesystem", matchIfMissing = true)
 @ConfigurationProperties(prefix = "storage.filesystem")
 @RequiredArgsConstructor
 public class LocalFileSystemStorageHandler
