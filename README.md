@@ -7,7 +7,7 @@
 </div>
 
 <p style="text-align: center;">
-  <img src="assets/trino-history.png" alt="Trino History Image" width="300"/>
+  <img src="assets/trino-history.png" alt="Trino History Image" width="200"/>
 </p>
 
 ## Overview
