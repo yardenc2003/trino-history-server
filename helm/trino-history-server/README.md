@@ -14,7 +14,7 @@ Refer to Helm's [documentation](https://helm.sh/docs/) for setup instructions.
 
 ```bash
 git clone https://github.com/yardenc2003/trino-history-server.git
-cd trino-history-server/helm
+cd trino-history-server/helm/
 ```
 
 ### Step 2: Customize Configuration (Optional)
@@ -31,23 +31,33 @@ Edit `my-values.yaml` as needed for your environment, such as:
 - Trino authentication
 - PVC size or ingress settings
 
-### Step 3: Render Manifests (Optional)
+### Step 3: Add Chart Repositories and Build Dependencies
+
+If your chart depends on other charts (e.g., `webui` includes Trino as a subchart), make sure to add the necessary Helm repositories and build dependencies:
+
+```bash
+helm repo add trino https://trinodb.github.io/charts/
+helm repo update
+helm dependency build
+```
+
+### Step 4: Render Manifests (Optional)
 
 To inspect the generated Kubernetes manifests before applying:
 
 ```bash
-helm template trino-history ./trino-history-server -f my-values.yaml --namespace trino-history
+helm template trino-history . -f my-values.yaml --namespace trino-history
 ```
 
-### Step 4: Install the Chart
+### Step 5: Install the Chart
 
 Install the chart using:
 
 ```bash
-helm install trino-history ./trino-history-server -f my-values.yaml --namespace trino-history --create-namespace
+helm install trino-history . -f my-values.yaml
 ```
 
 
 ## Documentation
 
-For ore information about the *Trino History Server* Project and its configuration, refer the [project documentation](./../../README.md).
+For more information about the *Trino History Server* Project and its configuration, refer the [project documentation](./../../README.md).
