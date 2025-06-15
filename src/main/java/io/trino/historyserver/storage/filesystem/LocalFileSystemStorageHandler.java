@@ -9,41 +9,39 @@ import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
 import io.trino.historyserver.storage.QueryStorageHandler;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
-@Getter
-@Setter
 @Slf4j
 @Service
 @ConditionalOnProperty(name = "storage.type", havingValue = "filesystem")
 @ConfigurationProperties(prefix = "storage.filesystem")
+@RequiredArgsConstructor
 public class LocalFileSystemStorageHandler
         implements QueryStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
 
-    private String queryDir;
+    private final FileSystemStorageProperties props;
 
     @PostConstruct
     private void ensureDirectoryExists()
     {
         try {
-            Files.createDirectories(Path.of(queryDir));
+            Files.createDirectories(Path.of(props.getQueryDir()));
         }
         catch (IOException e) {
             throw new StorageInitializationException(
                     String.format(
                             "Failed to create directory \"%s\" existence due to filesystem error.",
-                            queryDir
+                            props.getQueryDir()
                     ), e
             );
         }
-        log.info("event=directory_create_succeeded type=success path=\"{}\"", queryDir);
+        log.info("event=directory_create_succeeded type=success path=\"{}\"", props.getQueryDir());
     }
 
     @Override
@@ -104,6 +102,6 @@ public class LocalFileSystemStorageHandler
 
     public Path getQueryPath(String queryId, String environment)
     {
-        return Path.of(queryDir, environment, queryId + FILE_EXTENSION);
+        return Path.of(props.getQueryDir(), environment, queryId + FILE_EXTENSION);
     }
 }
