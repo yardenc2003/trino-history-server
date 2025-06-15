@@ -6,6 +6,10 @@
 
 </div>
 
+<p align="center">
+  <img src="assets/trino-history.png" alt="My Image" width="300"/>
+</p>
+
 ## Overview
 
 The **Trino History Server** is a Spring Boot-based backend service that collects and stores query data from Trino coordinators.
