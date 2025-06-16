@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "storage")
-public class RetryingStorageProperties
+public class StorageProperties
 {
     private int maxRetries = 3;
     private long backoffMillis = 500;
