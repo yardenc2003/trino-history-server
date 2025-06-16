@@ -1,8 +1,8 @@
 #!/bin/bash
-set -e
+set -eu
 
 VERSION=${1:-latest}
-ARCH=${2:-arm64}
+ARCH=${2:-amd64}
 IMAGE_NAME="trino-history-backend:${VERSION}-${ARCH}"
 
 # Paths
