@@ -30,18 +30,20 @@ public class LocalFileSystemStorageHandler
     @PostConstruct
     private void ensureDirectoryExists()
     {
+        String queryDir = props.getQueryDir();
+
         try {
-            Files.createDirectories(Path.of(props.getQueryDir()));
+            Files.createDirectories(Path.of(queryDir));
         }
         catch (IOException e) {
             throw new StorageInitializationException(
                     String.format(
                             "Failed to create directory \"%s\" existence due to filesystem error.",
-                            props.getQueryDir()
+                            queryDir
                     ), e
             );
         }
-        log.info("event=directory_create_succeeded type=success path=\"{}\"", props.getQueryDir());
+        log.info("event=directory_create_succeeded type=success path=\"{}\"", queryDir);
     }
 
     @Override
