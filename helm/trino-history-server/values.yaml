@@ -30,6 +30,26 @@ podSecurityContext: {}
 
 securityContext: {}
 
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: http
+#  initialDelaySeconds: 10
+#  periodSeconds: 10
+#  timeoutSeconds: 2
+#  successThreshold: 1
+#  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: http
+#  initialDelaySeconds: 5
+#  periodSeconds: 10
+#  timeoutSeconds: 2
+#  successThreshold: 1
+#  failureThreshold: 3
+
 service:
   type: ClusterIP
   port: 8080
@@ -45,8 +65,8 @@ server:
   # Note: The properties defined below will be automatically converted to environment variables and mounted into the history server backend pods via a ConfigMap.
   properties:
     # Mandatory: must be provided by the user
-    trino.auth.username:
-    trino.auth.password:
+    trino.auth.username: ""
+    trino.auth.password: ""
     # Additional properties:
     # global.environment: test                      # defaults to "test"
     # storage.type: <filesystem|jdbc|s3>            # defaults to "filesystem"
