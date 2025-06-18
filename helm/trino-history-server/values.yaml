@@ -45,8 +45,8 @@ server:
   # Note: The properties defined below will be automatically converted to environment variables and mounted into the history server backend pods via a ConfigMap.
   properties:
     # Mandatory: must be provided by the user
-    trino.auth.username: ""
-    trino.auth.password: ""
+    trino.auth.username:
+    trino.auth.password:
     # Additional properties:
     # global.environment: test                      # defaults to "test"
     # storage.type: <filesystem|jdbc|s3>            # defaults to "filesystem"

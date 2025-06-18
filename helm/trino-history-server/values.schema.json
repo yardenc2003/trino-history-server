@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "properties": {
+    "server": {
+      "type": "object",
+      "properties": {
+        "properties": {
+          "type": "object",
+          "properties": {
+            "trino.auth.username": {
+              "type": "string"
+            },
+            "trino.auth.password": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "trino.auth.username",
+            "trino.auth.password"
+          ]
+        }
+      },
+      "required": [
+        "properties"
+      ]
+    }
+  },
+  "required": [
+    "server"
+  ]
+}
