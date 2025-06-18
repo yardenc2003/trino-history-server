@@ -1,3 +1,4 @@
+{{- $scheme := ternary "https" "http" .Values.server.https.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5,5 +6,5 @@ metadata:
   labels:
     {{- include "trino-history-server.labels" . | nindent 4 }}
 data:
-  BACKEND_SERVICE_URL: http://{{ include "trino-history-server.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+  BACKEND_SERVICE_URL: {{ $scheme }}://{{ include "trino-history-server.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
   BACKEND_QUERY_PATH: {{ .Values.server.queryPath }}

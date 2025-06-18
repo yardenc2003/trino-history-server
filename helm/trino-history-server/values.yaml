@@ -35,10 +35,14 @@ service:
   port: 8080
 
 server:
+  # Determines whether the history server backend serves traffic over HTTPS.
+  https:
+    enabled: true
   # The URL path from which the Web UI retrieves query data.
   queryPath: "/api/v1/query/"
   # Spring Boot application properties to inject via ConfigMap or environment variables.
   # For the full list of supported configuration keys, visit: https://github.com/yardenc2003/trino-history-server/blob/main/README.md
+  # Note: The properties defined below will be automatically converted to environment variables and mounted into the history server backend pods via a ConfigMap.
   properties:
     # Mandatory: must be provided by the user
     trino.auth.username: ""
