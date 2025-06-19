@@ -8,8 +8,8 @@ metadata:
     {{- include "trino-history-server.labels" . | nindent 4 }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.server.fileSystemPvc.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.fileSystemPvcSize | default "1Gi" }}
+      storage: {{ .Values.server.fileSystemPvc.size | default "1Gi" }}
 {{- end }}
