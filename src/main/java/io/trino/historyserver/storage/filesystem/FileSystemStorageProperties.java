@@ -11,5 +11,5 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "storage.filesystem")
 public class FileSystemStorageProperties
 {
-    private String queryDir = "app/data/queries";
+    private String queryDir;
 }
