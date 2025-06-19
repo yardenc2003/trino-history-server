@@ -24,7 +24,7 @@ public class S3StorageProperties
 
     private String bucket;
 
-    private String queryDir = "app/data/queries";
+    private String queryDir;
 
     private StorageClass storageClass = StorageClass.STANDARD;
 
