@@ -125,7 +125,7 @@ This project is developed using Java 24 and the Spring Boot framework, with Mave
 
 ### Prerequisites
 
-* Java 24
+* Java 24+
 
 ### Build the Project
 
