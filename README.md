@@ -121,11 +121,11 @@ storage.s3.path-style-access=true         # Use path-style access
 
 ## Development
 
-This project is developed using Java 23 and the Spring Boot framework, with Maven as the build tool (via the Maven Wrapper).
+This project is developed using Java 24 and the Spring Boot framework, with Maven as the build tool (via the Maven Wrapper).
 
 ### Prerequisites
 
-* Java 23+
+* Java 24
 
 ### Build the Project
 
