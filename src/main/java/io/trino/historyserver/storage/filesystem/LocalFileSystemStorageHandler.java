@@ -25,7 +25,7 @@ public class LocalFileSystemStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
 
-    private final FileSystemStorageProperties props;
+    private final FileSystemStorageHandlerProperties props;
 
     @PostConstruct
     private void ensureDirectoryExists()

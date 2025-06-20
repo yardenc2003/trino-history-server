@@ -1,4 +1,4 @@
-package io.trino.historyserver.storage.filesystem;
+package io.trino.historyserver.storage;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,8 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "storage.filesystem")
-public class FileSystemStorageProperties
+@ConfigurationProperties(prefix = "storage")
+public class RetryingStorageHandlerProperties
 {
-    private String queryDir;
+    private int maxRetries = 3;
+    private long backoffMillis = 500;
 }

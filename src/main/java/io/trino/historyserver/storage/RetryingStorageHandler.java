@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class RetryingStorageHandler
         implements QueryStorageHandler
 {
-    private final RetryingStorageProperties props;
+    private final RetryingStorageHandlerProperties props;
     private final QueryStorageHandler delegate;
     private final TaskRetryExecutor taskRetryExecutor;
 
