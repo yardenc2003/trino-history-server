@@ -1,0 +1,161 @@
+# Default values for trino-history-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: trino-history-backend
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+imagePullSecrets: []
+fullnameOverride: "trino-history-backend"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: http
+#  initialDelaySeconds: 10
+#  periodSeconds: 10
+#  timeoutSeconds: 2
+#  successThreshold: 1
+#  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: http
+#  initialDelaySeconds: 5
+#  periodSeconds: 10
+#  timeoutSeconds: 2
+#  successThreshold: 1
+#  failureThreshold: 3
+
+service:
+  type: ClusterIP
+  port: 8080
+
+server:
+  # Determines whether the history server backend serves traffic over HTTPS.
+  https:
+    enabled: false
+  # The URL path from which the Web UI retrieves query data.
+  queryPath: "/api/v1/query/"
+  # Spring Boot application properties to inject via ConfigMap or environment variables.
+  # For the full list of supported configuration keys, visit: https://github.com/yardenc2003/trino-history-server/blob/main/README.md
+  # Note: The properties defined below will be automatically converted to environment variables and mounted into the history server backend pods via a ConfigMap.
+  properties:
+    # Mandatory: must be provided by the user
+    trino.auth.username: ""
+    trino.auth.password: ""
+    # Additional properties:
+    # global.environment: test                      # defaults to "test"
+    # storage.type: <filesystem|jdbc|s3>            # defaults to "filesystem"
+    # storage.filesystem.query-dir: <local-path>    # defaults to "data/queries"
+    # storage.jdbc.dialect: <jdbc-dialect>          # e.g., "postgresql", "mysql"
+    # storage.jdbc.url: <jdbc-connection-url>
+    # storage.jdbc.username: <db-username>
+    # storage.jdbc.password: <db-password>
+  # Size of the PersistentVolumeClaim used when `storage.type` is set to "filesystem".
+  # This PVC is used to store query history data locally.
+  fileSystemPvc:
+    accessMode: ReadWriteMany
+    size: "1Gi"
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+webui:
+  enabled: true
+  coordinatorNameOverride: webui
+
+  image:
+    # Repository location of the Trino History Server (fork) image.
+    # Should be built from the forked project at https://github.com/your-org/trino-history-ui).
+    repository: trino-history-webui
+    tag: "475.2"
+    pullPolicy: IfNotPresent
+
+  server:
+    # Set workers to 0 to run only the coordinator as the history Web UI.
+    workers: 0
+    node:
+      environment: history
+
+    # Configuration for connecting the Web UI to the History Server backend.
+    # Set the full URL to the backend service and the path from which the Web UI retrieves query data.
+    coordinatorExtraConfig: |
+      web-ui.history-server.url=${ENV:BACKEND_SERVICE_URL}
+      web-ui.history-server.query-path=${ENV:BACKEND_QUERY_PATH}
+
+  catalogs:
+    # Set to default catalogs as null to disable
+    tpch: null
+    tpcds: null
+
+  envFrom:
+    - configMapRef:
+        name: '{{ .Release.Name }}-backend-service-configuration'

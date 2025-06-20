@@ -1,0 +1,15 @@
+{{- $storageType := index .Values.server.properties "storage.type" | default "filesystem" }}
+{{- if eq $storageType "filesystem" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "trino-history-server.fullname" . }}-data
+  labels:
+    {{- include "trino-history-server.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.server.fileSystemPvc.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.server.fileSystemPvc.size | default "1Gi" }}
+{{- end }}
