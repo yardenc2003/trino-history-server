@@ -12,7 +12,7 @@ import software.amazon.awssdk.services.s3.model.StorageClass;
 @Configuration
 @ConditionalOnProperty(name = "storage.type", havingValue = "s3")
 @ConfigurationProperties(prefix = "storage.s3")
-public class S3StorageProperties
+public class S3StorageHandlerProperties
 {
     private String region;
 
@@ -24,7 +24,7 @@ public class S3StorageProperties
 
     private String bucket;
 
-    private String queryDir = "query";
+    private String queryDir;
 
     private StorageClass storageClass = StorageClass.STANDARD;
 

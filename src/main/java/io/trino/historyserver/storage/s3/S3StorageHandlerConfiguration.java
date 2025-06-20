@@ -13,10 +13,10 @@ import java.net.URI;
 
 @Configuration
 @ConditionalOnProperty(name = "storage.type", havingValue = "s3")
-public class S3StorageConfiguration
+public class S3StorageHandlerConfiguration
 {
     @Bean
-    public S3Client s3Client(S3StorageProperties props)
+    public S3Client s3Client(S3StorageHandlerProperties props)
     {
         return S3Client.builder()
                 .endpointOverride(URI.create(props.getEndpoint()))

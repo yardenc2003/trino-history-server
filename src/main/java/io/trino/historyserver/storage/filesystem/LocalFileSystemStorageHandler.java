@@ -9,29 +9,29 @@ import io.trino.historyserver.exception.QueryStorageException;
 import io.trino.historyserver.exception.StorageInitializationException;
 import io.trino.historyserver.storage.QueryStorageHandler;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
-@Getter
-@Setter
 @Slf4j
 @Service
-@ConditionalOnProperty(name = "storage.type", havingValue = "filesystem")
+@ConditionalOnProperty(name = "storage.type", havingValue = "filesystem", matchIfMissing = true)
 @ConfigurationProperties(prefix = "storage.filesystem")
+@RequiredArgsConstructor
 public class LocalFileSystemStorageHandler
         implements QueryStorageHandler
 {
     private static final String FILE_EXTENSION = ".json";
 
-    private String queryDir;
+    private final FileSystemStorageHandlerProperties props;
 
     @PostConstruct
     private void ensureDirectoryExists()
     {
+        String queryDir = props.getQueryDir();
+
         try {
             Files.createDirectories(Path.of(queryDir));
         }
@@ -50,7 +50,7 @@ public class LocalFileSystemStorageHandler
     public void writeQuery(String queryId, String environment, String queryJson)
             throws QueryStorageException
     {
-        Path path = getQueryPath(queryId, environment);
+        Path path = getQueryPath(queryId);
 
         try {
             this.write(path, queryJson);
@@ -72,7 +72,7 @@ public class LocalFileSystemStorageHandler
             throws QueryStorageException
     {
         String queryJson;
-        Path path = getQueryPath(queryId, environment);
+        Path path = getQueryPath(queryId);
 
         try {
             queryJson = this.read(path);
@@ -102,8 +102,8 @@ public class LocalFileSystemStorageHandler
         return Files.readString(fullPath);
     }
 
-    public Path getQueryPath(String queryId, String environment)
+    public Path getQueryPath(String queryId)
     {
-        return Path.of(queryDir, environment, queryId + FILE_EXTENSION);
+        return Path.of(props.getQueryDir(), queryId + FILE_EXTENSION);
     }
 }

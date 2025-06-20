@@ -34,7 +34,7 @@ public class S3StorageHandler
     public static final String JSON_MEDIA_TYPE = "application/json";
 
     private final S3Client s3Client;
-    private final S3StorageProperties props;
+    private final S3StorageHandlerProperties props;
 
     @PostConstruct
     private void ensureBucketExists()
