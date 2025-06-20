@@ -121,11 +121,11 @@ storage.s3.path-style-access=true         # Use path-style access
 
 ## Development
 
-This project is developed using Java 24 and the Spring Boot framework, with Maven as the build tool (via the Maven Wrapper).
+This project is developed using Java 23 and the Spring Boot framework, with Maven as the build tool (via the Maven Wrapper).
 
 ### Prerequisites
 
-* Java 24+
+* Java 23+
 
 ### Build the Project
 
@@ -144,33 +144,3 @@ From the **root directory** of the project, run:
 By default, the History Server starts on port `8080`. Configuration — such as storage settings or Trino user authentication details — 
 can be adjusted via `application.yaml` or environment variables.
 
-## Building the Docker Image
-
-To build a Docker image for the History Server backend, run:
-
-```bash
-./docker/build.sh [version] [arch]
-```
-
-* `[version]` (optional): The image version tag (e.g. `1.0.1`). Defaults to `latest` if not specified.
-* `[arch]` (optional): The target architecture (e.g. `amd64`, `arm64`). Defaults to `amd64`.
-
-Examples:
-
-```bash
-./docker/build.sh                # Builds version "latest" for amd64
-```
-
-```bash
-./docker/build.sh 1.0.0         # Builds version 1.0.0 for amd64
-```
-
-```bash
-./docker/build.sh 1.0.0 arm64    # Builds version 1.0.0 for arm64
-```
-
-This produces a Docker image tagged as:
-
-```text
-trino-history-backend:<version>-<arch>
-```
