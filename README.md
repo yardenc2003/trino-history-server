@@ -1,13 +1,9 @@
-<div style="text-align: center">
-
-<h1>Trino Query History Server</h1>
-
-<p><b>A backend service for persisting and serving query history from Trino coordinators</b></p>
-
-</div>
-
-<p style="text-align: center;">
-  <img src="assets/trino-history.png" alt="Trino History Image" width="200"/>
+<h1 align="center">Trino Query History Server</h1>
+<p align="center">
+    <img alt="Trino Logo" src="assets/trino-history.png" /></a>
+</p>
+<p align="center">
+    <b>A backend service for persisting and serving query history from Trino coordinators.</b>
 </p>
 
 ## Overview
