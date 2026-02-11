@@ -77,9 +77,14 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: {{ include "trino-history-server.fullname" . }}-properties
+          {{- if .Values.envFrom }}
+          {{- tpl (toYaml .Values.envFrom) . | nindent 12 }}
+          {{- end }}
       {{- if eq $storageType "filesystem" }}
       volumes:
         - name: data-volume
