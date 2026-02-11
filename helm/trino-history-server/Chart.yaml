@@ -2,7 +2,7 @@ apiVersion: v2
 name: trino-history-server
 description: Helm chart for deploying the Trino History Server backend and a custom Web UI.
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: "1.0.0"
 
 dependencies:

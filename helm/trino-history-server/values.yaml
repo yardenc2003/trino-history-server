@@ -58,6 +58,11 @@ server:
   # Determines whether the history server backend serves traffic over HTTPS.
   https:
     enabled: false
+  # Configures custom truststore to be used by the application
+  trustStore: {}
+  #  path: /path/to/truststore.jks
+  #  password: changeme
+  #  type: JKS
   # The URL path from which the Web UI retrieves query data.
   queryPath: "/api/v1/query/"
   # Spring Boot application properties to inject via ConfigMap or environment variables.
@@ -80,6 +85,14 @@ server:
   fileSystemPvc:
     accessMode: ReadWriteMany
     size: "1Gi"
+
+env: []
+#  - name: NAME
+#    value: "value"
+
+envFrom: []
+#  - secretRef:
+#      name: extra-secret
 
 ingress:
   enabled: false
